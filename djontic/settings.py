@@ -57,7 +57,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'react/build'), 
+            os.path.join(BASE_DIR, 'ontic_react/build'), 
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -121,8 +121,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIR = [
-    os.path.join(BASE_DIR, 'react/build/static'), 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'ontic_react/build/static'), 
 ]
 
 # Default primary key field type

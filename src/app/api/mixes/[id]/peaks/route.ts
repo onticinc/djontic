@@ -27,7 +27,7 @@ export async function GET(_request: Request, { params }: Params) {
     if (peaks?.length) {
       return NextResponse.json(
         { peaks },
-        { headers: { "Cache-Control": "public, max-age=86400" } },
+        { headers: { "Cache-Control": "public, max-age=3600" } },
       );
     }
 

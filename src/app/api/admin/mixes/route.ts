@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { readMixesStore, writeMixesStore } from "@/lib/mixes";
-import { normalizeCoverUrl, type MixRecord } from "@/lib/mix-types";
+import { getPlayCounts } from "@/lib/play-counts";
+import {
+  normalizeCategory,
+  normalizeCoverUrl,
+  syncCategoryOrder,
+  type MixRecord,
+} from "@/lib/mix-types";
 
 export async function GET() {
   const unauthorized = await requireAdmin();
   if (unauthorized) return unauthorized;
 
   const store = await readMixesStore();
-  return NextResponse.json(store);
+  const playCounts = await getPlayCounts();
+  return NextResponse.json({ ...store, playCounts });
 }
 
 export async function PUT(request: Request) {
@@ -18,6 +25,7 @@ export async function PUT(request: Request) {
   const body = (await request.json()) as {
     mixes?: MixRecord[];
     folderUrl?: string;
+    categoryOrder?: string[];
   };
 
   if (!Array.isArray(body.mixes)) {
@@ -25,18 +33,28 @@ export async function PUT(request: Request) {
   }
 
   const current = await readMixesStore();
+  const mixes = body.mixes.map((mix, index) => ({
+    ...mix,
+    order: typeof mix.order === "number" ? mix.order : index,
+    visible: Boolean(mix.visible),
+    title: mix.title?.trim() || mix.filename,
+    coverUrl: normalizeCoverUrl(mix.coverUrl),
+    category: normalizeCategory(mix.category),
+  }));
+
   const store = {
     folderUrl: body.folderUrl || current.folderUrl,
     updatedAt: new Date().toISOString(),
-    mixes: body.mixes.map((mix, index) => ({
-      ...mix,
-      order: typeof mix.order === "number" ? mix.order : index,
-      visible: Boolean(mix.visible),
-      title: mix.title?.trim() || mix.filename,
-      coverUrl: normalizeCoverUrl(mix.coverUrl),
-    })),
+    mixes,
+    categoryOrder: syncCategoryOrder(
+      mixes,
+      Array.isArray(body.categoryOrder)
+        ? body.categoryOrder
+        : current.categoryOrder,
+    ),
   };
 
   await writeMixesStore(store);
-  return NextResponse.json(await readMixesStore());
+  const playCounts = await getPlayCounts();
+  return NextResponse.json({ ...(await readMixesStore()), playCounts });
 }

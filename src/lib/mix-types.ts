@@ -8,12 +8,16 @@ export type MixRecord = {
   order: number;
   /** Optional external cover image URL (https…). */
   coverUrl: string | null;
+  /** Optional grouping label shown on the mixes page. */
+  category: string | null;
 };
 
 export type MixesStore = {
   folderUrl: string;
   updatedAt: string;
   mixes: MixRecord[];
+  /** Display order for named categories on the mixes page. */
+  categoryOrder: string[];
 };
 
 export type Mix = {
@@ -28,6 +32,7 @@ export type Mix = {
   artworkUrl: string;
   peaksUrl: string;
   playCount: number;
+  category: string | null;
 };
 
 export function filenameToTitle(filename: string): string {
@@ -66,6 +71,64 @@ export function normalizeCoverUrl(value: unknown): string | null {
   }
 }
 
+export function normalizeCategory(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
+/** Keep saved order, drop unused names, append newly seen categories. */
+export function syncCategoryOrder(
+  mixes: MixRecord[],
+  order: string[] = [],
+): string[] {
+  const used = new Set<string>();
+  for (const mix of mixes) {
+    const category = normalizeCategory(mix.category);
+    if (category) used.add(category);
+  }
+
+  const next: string[] = [];
+  const seen = new Set<string>();
+  for (const name of order) {
+    const category = normalizeCategory(name);
+    if (!category || !used.has(category) || seen.has(category)) continue;
+    next.push(category);
+    seen.add(category);
+  }
+  for (const category of used) {
+    if (seen.has(category)) continue;
+    next.push(category);
+    seen.add(category);
+  }
+  return next;
+}
+
+/** Turn share/preview links into a URL that actually returns image bytes. */
+export function resolveCoverFetchUrl(coverUrl: string): string {
+  try {
+    const url = new URL(coverUrl);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host === "dropbox.com" || host === "dl.dropboxusercontent.com") {
+      url.hostname = "dl.dropboxusercontent.com";
+      url.searchParams.set("dl", "1");
+      url.searchParams.delete("st");
+      return url.toString();
+    }
+
+    // drive.google.com/file/d/ID/view → uc?export=download
+    const driveMatch = url.pathname.match(/\/file\/d\/([^/]+)/);
+    if (host === "drive.google.com" && driveMatch) {
+      return `https://drive.usercontent.google.com/download?id=${driveMatch[1]}&export=view`;
+    }
+
+    return url.toString();
+  } catch {
+    return coverUrl;
+  }
+}
+
 /** Normalize older Dropbox-shaped records into Drive records. */
 export function normalizeMixRecord(raw: Record<string, unknown>): MixRecord {
   const filename = String(raw.filename ?? "");
@@ -81,5 +144,6 @@ export function normalizeMixRecord(raw: Record<string, unknown>): MixRecord {
     visible: Boolean(raw.visible),
     order: typeof raw.order === "number" ? raw.order : 0,
     coverUrl: normalizeCoverUrl(raw.coverUrl),
+    category: normalizeCategory(raw.category),
   };
 }

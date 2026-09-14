@@ -1,15 +1,73 @@
 "use client";
 
 import { AudioPlayer } from "@/components/AudioPlayer";
-import { MixPlaybackProvider } from "@/components/MixPlaybackProvider";
 import type { Mix } from "@/lib/mixes";
 
-export function MixList({ mixes }: { mixes: Mix[] }) {
+type MixGroup = {
+  key: string;
+  label: string | null;
+  mixes: Mix[];
+};
+
+function groupMixes(mixes: Mix[], categoryOrder: string[] = []): MixGroup[] {
+  const groups: MixGroup[] = [];
+  const indexByKey = new Map<string, number>();
+
+  for (const mix of mixes) {
+    const label = mix.category?.trim() || null;
+    const key = label ? `cat:${label.toLowerCase()}` : "uncategorized";
+    const existing = indexByKey.get(key);
+    if (existing === undefined) {
+      indexByKey.set(key, groups.length);
+      groups.push({ key, label, mixes: [mix] });
+    } else {
+      groups[existing].mixes.push(mix);
+    }
+  }
+
+  const orderIndex = new Map(
+    categoryOrder.map((name, index) => [name.toLowerCase(), index]),
+  );
+  const named = groups
+    .filter((group) => group.key !== "uncategorized")
+    .sort((a, b) => {
+      const aIndex = orderIndex.get((a.label ?? "").toLowerCase()) ?? 9999;
+      const bIndex = orderIndex.get((b.label ?? "").toLowerCase()) ?? 9999;
+      return aIndex - bIndex;
+    });
+  const uncategorized = groups.filter((group) => group.key === "uncategorized");
+  return [...named, ...uncategorized];
+}
+
+export function MixList({
+  mixes,
+  categoryOrder = [],
+}: {
+  mixes: Mix[];
+  categoryOrder?: string[];
+}) {
+  const groups = groupMixes(mixes, categoryOrder);
+  const showHeadings = groups.length > 1 || Boolean(groups[0]?.label);
+
   return (
-    <MixPlaybackProvider>
-      {mixes.map((mix) => (
-        <AudioPlayer key={mix.id} mix={mix} />
+    <>
+      {groups.map((group, groupIndex) => (
+        <div
+          key={group.key}
+          className={
+            groupIndex > 0 ? "mt-8 border-t border-white/10 pt-8" : undefined
+          }
+        >
+          {showHeadings ? (
+            <h2 className="mb-5 font-display text-3xl tracking-[0.08em] text-white sm:text-4xl">
+              {group.label ?? "Uncategorized"}
+            </h2>
+          ) : null}
+          {group.mixes.map((mix) => (
+            <AudioPlayer key={mix.id} mix={mix} />
+          ))}
+        </div>
       ))}
-    </MixPlaybackProvider>
+    </>
   );
 }

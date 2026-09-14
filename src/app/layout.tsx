@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Bebas_Neue } from "next/font/google";
-import { SiteBanner } from "@/components/SiteBanner";
-import { SiteFooter } from "@/components/SiteFooter";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AppShell } from "@/components/AppShell";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -37,10 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${archivo.variable} ${bebas.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
-        <SiteBanner />
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

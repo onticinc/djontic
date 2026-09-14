@@ -87,17 +87,38 @@ body {
   }
 }
 
+.mix-seek {
+  height: 2px;
+}
+
+.mix-seek::-webkit-slider-runnable-track {
+  height: 2px;
+  background: transparent;
+}
+
 .mix-seek::-webkit-slider-thumb {
   appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
+  margin-top: -4px;
   border-radius: 0;
   background: #fff;
 }
 
+.mix-seek::-moz-range-track {
+  height: 2px;
+  background: transparent;
+  border: 0;
+}
+
+.mix-seek::-moz-range-progress {
+  height: 2px;
+  background: #fff;
+}
+
 .mix-seek::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border: 0;
   border-radius: 0;
   background: #fff;

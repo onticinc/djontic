@@ -31,6 +31,7 @@ export async function POST() {
       folderUrl,
       updatedAt: new Date().toISOString(),
       mixes,
+      categoryOrder: current.categoryOrder,
     });
 
     return NextResponse.json({

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { PodcastVideo } from "@/lib/youtube";
 
 export function PodcastGrid({ videos }: { videos: PodcastVideo[] }) {
@@ -14,12 +15,7 @@ export function PodcastGrid({ videos }: { videos: PodcastVideo[] }) {
     <ul className="grid gap-8 border-t border-white/10 pt-8 sm:grid-cols-2 lg:grid-cols-3">
       {videos.map((video) => (
         <li key={video.id}>
-          <a
-            href={video.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group block"
-          >
+          <Link href={`/podcast/${encodeURIComponent(video.id)}`} className="group block">
             <div className="relative aspect-video overflow-hidden bg-zinc-900">
               <Image
                 src={video.thumbnail}
@@ -35,7 +31,7 @@ export function PodcastGrid({ videos }: { videos: PodcastVideo[] }) {
             <h2 className="mt-1 font-display text-xl tracking-[0.04em] text-white transition group-hover:text-steel">
               {video.title}
             </h2>
-          </a>
+          </Link>
         </li>
       ))}
     </ul>

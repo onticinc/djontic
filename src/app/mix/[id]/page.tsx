@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MixList } from "@/components/MixList";
 import { getFeaturedMixes, getMixById } from "@/lib/mixes";
-import { getPlayCount } from "@/lib/play-counts";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -45,11 +44,8 @@ export default async function MixPage({ params }: Props) {
   if (!found || !found.mix.visible) notFound();
 
   const mixes = await getFeaturedMixes();
-  const mix = mixes.find((item) => item.id === id);
+  const mix = mixes.mixes.find((item) => item.id === id);
   if (!mix) notFound();
-
-  // Ensure play count is current even if featured list was cached oddly
-  mix.playCount = await getPlayCount(id);
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">

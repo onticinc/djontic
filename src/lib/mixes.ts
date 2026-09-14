@@ -7,6 +7,7 @@ import {
   filenameToTitle,
   normalizeMixRecord,
   sortMixes,
+  syncCategoryOrder,
   type Mix,
   type MixRecord,
   type MixesStore,
@@ -16,6 +17,14 @@ export type { Mix, MixRecord, MixesStore };
 
 const DATA_PATH = path.join(process.cwd(), "data", "mixes.json");
 
+function artworkUrlFor(mix: MixRecord) {
+  const base = `/api/mixes/${encodeURIComponent(mix.id)}/artwork`;
+  if (!mix.coverUrl) return base;
+  // Bust browser cache when the cover link changes.
+  const token = Buffer.from(mix.coverUrl).toString("base64url").slice(0, 12);
+  return `${base}?c=${token}`;
+}
+
 export async function readMixesStore(): Promise<MixesStore> {
   try {
     const raw = await fs.readFile(DATA_PATH, "utf8");
@@ -23,54 +32,75 @@ export async function readMixesStore(): Promise<MixesStore> {
       folderUrl?: string;
       updatedAt?: string;
       mixes?: Array<Record<string, unknown>>;
+      categoryOrder?: unknown;
     };
+    const mixes = sortMixes((parsed.mixes ?? []).map(normalizeMixRecord));
+    const categoryOrder = Array.isArray(parsed.categoryOrder)
+      ? syncCategoryOrder(
+          mixes,
+          parsed.categoryOrder.filter(
+            (item): item is string => typeof item === "string",
+          ),
+        )
+      : syncCategoryOrder(mixes);
     return {
       folderUrl: parsed.folderUrl || getDriveFolderUrl(),
       updatedAt: parsed.updatedAt || new Date().toISOString(),
-      mixes: sortMixes((parsed.mixes ?? []).map(normalizeMixRecord)),
+      mixes,
+      categoryOrder,
     };
   } catch {
     return {
       folderUrl: getDriveFolderUrl(),
       updatedAt: new Date().toISOString(),
       mixes: [],
+      categoryOrder: [],
     };
   }
 }
 
 export async function writeMixesStore(store: MixesStore): Promise<void> {
+  const mixes = sortMixes(store.mixes).map((mix, index) => ({
+    ...normalizeMixRecord(mix as unknown as Record<string, unknown>),
+    order: index,
+  }));
   const next: MixesStore = {
     folderUrl: store.folderUrl || getDriveFolderUrl(),
     updatedAt: new Date().toISOString(),
-    mixes: sortMixes(store.mixes).map((mix, index) => ({
-      ...normalizeMixRecord(mix as unknown as Record<string, unknown>),
-      order: index,
-    })),
+    mixes,
+    categoryOrder: syncCategoryOrder(mixes, store.categoryOrder ?? []),
   };
 
   await fs.mkdir(path.dirname(DATA_PATH), { recursive: true });
   await fs.writeFile(DATA_PATH, `${JSON.stringify(next, null, 2)}\n`, "utf8");
 }
 
-export async function getFeaturedMixes(): Promise<Mix[]> {
+export async function getFeaturedMixes(): Promise<{
+  mixes: Mix[];
+  categoryOrder: string[];
+}> {
   const store = await readMixesStore();
   const playCounts = await getPlayCounts();
 
-  return store.mixes
-    .filter((mix) => mix.visible)
-    .map((mix) => ({
-      id: mix.id,
-      title: mix.title,
-      filename: mix.filename,
-      shareUrl: store.folderUrl,
-      pageUrl: `/mix/${encodeURIComponent(mix.id)}`,
-      // ?v=2 busts browsers that cached the earlier 302→Drive redirect.
-      streamUrl: `/api/mixes/${encodeURIComponent(mix.id)}/stream?v=2`,
-      downloadUrl: `/api/mixes/${encodeURIComponent(mix.id)}/download`,
-      artworkUrl: `/api/mixes/${encodeURIComponent(mix.id)}/artwork`,
-      peaksUrl: `/api/mixes/${encodeURIComponent(mix.id)}/peaks`,
-      playCount: playCounts[mix.id] ?? 0,
-    }));
+  return {
+    categoryOrder: store.categoryOrder,
+    mixes: store.mixes
+      .filter((mix) => mix.visible)
+      .map((mix) => ({
+        id: mix.id,
+        title: mix.title,
+        filename: mix.filename,
+        shareUrl: store.folderUrl,
+        pageUrl: `/mix/${encodeURIComponent(mix.id)}`,
+        // ?v=2 busts browsers that cached the earlier 302→Drive redirect.
+        streamUrl: `/api/mixes/${encodeURIComponent(mix.id)}/stream?v=2`,
+        downloadUrl: `/api/mixes/${encodeURIComponent(mix.id)}/download`,
+        artworkUrl: artworkUrlFor(mix),
+        peaksUrl: `/api/mixes/${encodeURIComponent(mix.id)}/peaks?v=3`,
+        playCount: playCounts[mix.id] ?? 0,
+        category: mix.category,
+      })),
+  };
 }
 
 export async function getMixById(id: string): Promise<{
@@ -110,6 +140,7 @@ export function mergeSyncedFiles(
         visible: false,
         order: existing.length + next.length,
         coverUrl: null,
+        category: null,
       });
     }
   }

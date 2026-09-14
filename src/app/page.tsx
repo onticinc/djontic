@@ -4,7 +4,7 @@ import { getFeaturedMixes } from "@/lib/mixes";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const mixes = await getFeaturedMixes();
+  const { mixes, categoryOrder } = await getFeaturedMixes();
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
@@ -21,7 +21,7 @@ export default async function HomePage() {
             .
           </p>
         ) : (
-          <MixList mixes={mixes} />
+          <MixList mixes={mixes} categoryOrder={categoryOrder} />
         )}
       </div>
 

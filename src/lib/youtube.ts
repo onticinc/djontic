@@ -99,3 +99,23 @@ export async function getEggsPodcastVideos(): Promise<{
     return { videos: [], configured: true, error: message };
   }
 }
+
+export async function getEggsPodcastVideo(id: string): Promise<{
+  video: PodcastVideo | null;
+  configured: boolean;
+  error?: string;
+}> {
+  const result = await getEggsPodcastVideos();
+  if (!result.configured || result.error) {
+    return {
+      video: null,
+      configured: result.configured,
+      error: result.error,
+    };
+  }
+
+  return {
+    video: result.videos.find((video) => video.id === id) ?? null,
+    configured: true,
+  };
+}

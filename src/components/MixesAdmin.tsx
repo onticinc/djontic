@@ -1,22 +1,34 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { MixRecord, MixesStore } from "@/lib/mix-types";
+import {
+  syncCategoryOrder,
+  type MixRecord,
+  type MixesStore,
+} from "@/lib/mix-types";
 
 export function MixesAdmin() {
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [configured, setConfigured] = useState(true);
   const [store, setStore] = useState<MixesStore | null>(null);
+  const [playCounts, setPlayCounts] = useState<Record<string, number>>({});
   const [status, setStatus] = useState<string | null>(null);
   const [driveStatus, setDriveStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [draggingCategory, setDraggingCategory] = useState<string | null>(null);
+  const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
 
   const mixes = useMemo(
     () => [...(store?.mixes ?? [])].sort((a, b) => a.order - b.order),
     [store],
+  );
+
+  const categories = useMemo(
+    () => syncCategoryOrder(mixes, store?.categoryOrder ?? []),
+    [mixes, store?.categoryOrder],
   );
 
   useEffect(() => {
@@ -41,7 +53,16 @@ export function MixesAdmin() {
       setAuthenticated(false);
       return;
     }
-    setStore((await response.json()) as MixesStore);
+    const data = (await response.json()) as MixesStore & {
+      playCounts?: Record<string, number>;
+    };
+    setPlayCounts(data.playCounts ?? {});
+    setStore({
+      folderUrl: data.folderUrl,
+      updatedAt: data.updatedAt,
+      mixes: data.mixes,
+      categoryOrder: data.categoryOrder ?? [],
+    });
   }
 
   async function loadDriveStatus() {
@@ -94,9 +115,13 @@ export function MixesAdmin() {
     await fetch("/api/admin/login", { method: "DELETE" });
     setAuthenticated(false);
     setStore(null);
+    setPlayCounts({});
   }
 
-  async function save(nextMixes: MixRecord[]) {
+  async function save(
+    nextMixes: MixRecord[],
+    nextCategoryOrder: string[] = categories,
+  ) {
     if (!store) return;
     setBusy(true);
     setStatus(null);
@@ -107,6 +132,7 @@ export function MixesAdmin() {
         body: JSON.stringify({
           folderUrl: store.folderUrl,
           mixes: nextMixes.map((mix, index) => ({ ...mix, order: index })),
+          categoryOrder: nextCategoryOrder,
         }),
       });
       const data = await response.json();
@@ -114,7 +140,14 @@ export function MixesAdmin() {
         setStatus(data.error || "Save failed");
         return;
       }
-      setStore(data as MixesStore);
+      const next = data as MixesStore & { playCounts?: Record<string, number> };
+      setPlayCounts(next.playCounts ?? playCounts);
+      setStore({
+        folderUrl: next.folderUrl,
+        updatedAt: next.updatedAt,
+        mixes: next.mixes,
+        categoryOrder: next.categoryOrder ?? [],
+      });
       setStatus("Saved");
     } finally {
       setBusy(false);
@@ -144,10 +177,14 @@ export function MixesAdmin() {
 
   function updateMix(id: string, patch: Partial<MixRecord>) {
     if (!store) return;
-    const next = store.mixes.map((mix) =>
+    const nextMixes = store.mixes.map((mix) =>
       mix.id === id ? { ...mix, ...patch } : mix,
     );
-    setStore({ ...store, mixes: next });
+    setStore({
+      ...store,
+      mixes: nextMixes,
+      categoryOrder: syncCategoryOrder(nextMixes, store.categoryOrder),
+    });
   }
 
   function reorder(fromId: string, toId: string) {
@@ -171,6 +208,29 @@ export function MixesAdmin() {
     const [item] = copy.splice(index, 1);
     copy.splice(target, 0, item);
     void save(copy);
+  }
+
+  function reorderCategory(fromName: string, toName: string) {
+    if (fromName === toName) return;
+    const ordered = [...categories];
+    const fromIndex = ordered.indexOf(fromName);
+    const toIndex = ordered.indexOf(toName);
+    if (fromIndex < 0 || toIndex < 0) return;
+    const copy = [...ordered];
+    const [item] = copy.splice(fromIndex, 1);
+    copy.splice(toIndex, 0, item);
+    void save(mixes, copy);
+  }
+
+  function moveCategory(name: string, direction: -1 | 1) {
+    const ordered = [...categories];
+    const index = ordered.indexOf(name);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= ordered.length) return;
+    const copy = [...ordered];
+    const [item] = copy.splice(index, 1);
+    copy.splice(target, 0, item);
+    void save(mixes, copy);
   }
 
   if (!configured) {
@@ -212,7 +272,7 @@ export function MixesAdmin() {
         <button
           type="button"
           disabled={busy}
-          onClick={() => void save(mixes)}
+          onClick={() => void save(mixes, categories)}
           className="inline-flex h-11 items-center bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-black disabled:opacity-50"
         >
           Save changes
@@ -236,11 +296,104 @@ export function MixesAdmin() {
 
       {driveStatus ? <p className="text-sm text-zinc-400">{driveStatus}</p> : null}
       {status ? <p className="text-sm text-zinc-400">{status}</p> : null}
+
+      <section className="space-y-3">
+        <p className="text-xs uppercase tracking-[0.16em] text-zinc-600">
+          Category order
+        </p>
+        {categories.length === 0 ? (
+          <p className="text-sm text-zinc-500">
+            Assign categories on mixes below, then reorder them here.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {categories.map((name, index) => {
+              const isDragging = draggingCategory === name;
+              const isOver =
+                dragOverCategory === name && draggingCategory !== name;
+
+              return (
+                <li
+                  key={name}
+                  draggable={!busy}
+                  onDragStart={(event) => {
+                    setDraggingCategory(name);
+                    event.dataTransfer.effectAllowed = "move";
+                    event.dataTransfer.setData("text/plain", name);
+                  }}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = "move";
+                    if (dragOverCategory !== name) setDragOverCategory(name);
+                  }}
+                  onDragLeave={() => {
+                    if (dragOverCategory === name) setDragOverCategory(null);
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    const fromName =
+                      event.dataTransfer.getData("text/plain") ||
+                      draggingCategory;
+                    if (fromName) reorderCategory(fromName, name);
+                    setDraggingCategory(null);
+                    setDragOverCategory(null);
+                  }}
+                  onDragEnd={() => {
+                    setDraggingCategory(null);
+                    setDragOverCategory(null);
+                  }}
+                  className={`flex items-center gap-3 border border-white/10 bg-zinc-900 px-3 py-3 transition ${
+                    isDragging ? "opacity-40" : ""
+                  } ${isOver ? "border-white/25 bg-zinc-800" : ""}`}
+                >
+                  <span
+                    className="cursor-grab touch-none select-none px-2 text-zinc-500 active:cursor-grabbing"
+                    aria-hidden="true"
+                    title="Drag to reorder"
+                  >
+                    ⋮⋮
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={busy || index === 0}
+                      onClick={() => moveCategory(name, -1)}
+                      className="h-9 w-9 border border-white/15 bg-zinc-950 text-zinc-300 disabled:opacity-30"
+                      aria-label={`Move ${name} up`}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy || index === categories.length - 1}
+                      onClick={() => moveCategory(name, 1)}
+                      className="h-9 w-9 border border-white/15 bg-zinc-950 text-zinc-300 disabled:opacity-30"
+                      aria-label={`Move ${name} down`}
+                    >
+                      ↓
+                    </button>
+                  </div>
+                  <p className="min-w-0 flex-1 truncate text-sm text-white">
+                    {name}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
       <p className="text-xs uppercase tracking-[0.16em] text-zinc-600">
-        Drag rows to reorder
+        Drag mixes to reorder
       </p>
 
-      <ul className="divide-y divide-white/10 border border-white/10">
+      <datalist id="mix-categories">
+        {categories.map((name) => (
+          <option key={name} value={name} />
+        ))}
+      </datalist>
+
+      <ul className="space-y-3">
         {mixes.map((mix, index) => {
           const isDragging = draggingId === mix.id;
           const isOver = dragOverId === mix.id && draggingId !== mix.id;
@@ -274,9 +427,9 @@ export function MixesAdmin() {
                 setDraggingId(null);
                 setDragOverId(null);
               }}
-              className={`grid gap-4 px-4 py-4 transition md:grid-cols-[auto_auto_1fr_auto] md:items-center ${
+              className={`grid gap-4 border border-white/10 bg-zinc-900 px-4 py-4 transition md:grid-cols-[auto_auto_1fr_auto] md:items-center ${
                 isDragging ? "opacity-40" : ""
-              } ${isOver ? "bg-white/5" : ""}`}
+              } ${isOver ? "border-white/25 bg-zinc-800" : ""}`}
             >
               <span
                 className="cursor-grab touch-none select-none px-2 py-2 text-zinc-500 active:cursor-grabbing"
@@ -291,7 +444,7 @@ export function MixesAdmin() {
                   type="button"
                   disabled={busy || index === 0}
                   onClick={() => move(mix.id, -1)}
-                  className="h-9 w-9 border border-white/15 text-zinc-300 disabled:opacity-30"
+                  className="h-9 w-9 border border-white/15 bg-zinc-950 text-zinc-300 disabled:opacity-30"
                   aria-label={`Move ${mix.title} up`}
                 >
                   ↑
@@ -300,7 +453,7 @@ export function MixesAdmin() {
                   type="button"
                   disabled={busy || index === mixes.length - 1}
                   onClick={() => move(mix.id, 1)}
-                  className="h-9 w-9 border border-white/15 text-zinc-300 disabled:opacity-30"
+                  className="h-9 w-9 border border-white/15 bg-zinc-950 text-zinc-300 disabled:opacity-30"
                   aria-label={`Move ${mix.title} down`}
                 >
                   ↓
@@ -314,7 +467,7 @@ export function MixesAdmin() {
                     updateMix(mix.id, { title: event.target.value })
                   }
                   onMouseDown={(event) => event.stopPropagation()}
-                  className="w-full border border-white/10 bg-transparent px-3 py-2 text-white outline-none focus:border-white/30"
+                  className="w-full border border-white/15 bg-zinc-950 px-3 py-2 text-white outline-none focus:border-white/40"
                 />
                 <input
                   type="url"
@@ -326,12 +479,28 @@ export function MixesAdmin() {
                     })
                   }
                   onMouseDown={(event) => event.stopPropagation()}
-                  className="w-full border border-white/10 bg-transparent px-3 py-2 text-sm text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/30"
+                  className="w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/40"
+                />
+                <input
+                  list="mix-categories"
+                  value={mix.category ?? ""}
+                  placeholder="Category (optional)"
+                  onChange={(event) =>
+                    updateMix(mix.id, {
+                      category: event.target.value.length
+                        ? event.target.value
+                        : null,
+                    })
+                  }
+                  onMouseDown={(event) => event.stopPropagation()}
+                  className="w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/40"
                 />
                 <p className="truncate text-xs text-zinc-500">
                   {mix.filename}
                   {mix.driveId ? "" : " · needs sync"}
                   {mix.coverUrl ? " · custom cover" : ""}
+                  {mix.category ? ` · ${mix.category}` : ""}
+                  {` · ${new Intl.NumberFormat("en-US").format(playCounts[mix.id] ?? 0)} ${(playCounts[mix.id] ?? 0) === 1 ? "play" : "plays"}`}
                 </p>
               </div>
 

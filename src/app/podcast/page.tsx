@@ -6,7 +6,7 @@ import { getEggsPodcastVideos } from "@/lib/youtube";
 export const metadata: Metadata = {
   title: "Eggs Podcast",
   description:
-    "Watch the Eggs Podcast playlist featuring DJ Ontic on YouTube.",
+    "Watch Eggs Podcast episodes with DJ Ontic — conversations, culture, and the soundtrack around it.",
 };
 
 export const revalidate = 3600;
@@ -17,9 +17,9 @@ export default async function PodcastPage() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
       <PageHero
-        eyebrow="YouTube"
+        eyebrow="Podcast"
         title="Eggs Podcast"
-        description="Episodes from the Eggs Podcast playlist — conversations, culture, and the soundtrack around it."
+        description="Episodes from the Eggs Podcast — conversations, culture, and the soundtrack around it."
       />
 
       <div className="mt-12">

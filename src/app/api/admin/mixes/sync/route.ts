@@ -25,13 +25,18 @@ export async function POST() {
     const current = await readMixesStore();
     const folderUrl = getDriveFolderUrl();
     const files = await listMixFilesFromDrive();
-    const mixes = mergeSyncedFiles(current.mixes, files);
+    const mixes = mergeSyncedFiles(current.mixes, files, {
+      driveIds: current.ignoredDriveIds,
+      filenames: current.ignoredFilenames,
+    });
 
     await writeMixesStore({
       folderUrl,
       updatedAt: new Date().toISOString(),
       mixes,
       categoryOrder: current.categoryOrder,
+      ignoredDriveIds: current.ignoredDriveIds,
+      ignoredFilenames: current.ignoredFilenames,
     });
 
     return NextResponse.json({

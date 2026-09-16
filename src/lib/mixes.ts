@@ -3,11 +3,13 @@ import path from "path";
 import { getPlayCounts } from "./play-counts";
 import { getDriveFolderUrl } from "./gdrive";
 import {
-  filenameToId,
   filenameToTitle,
   normalizeMixRecord,
   sortMixes,
   syncCategoryOrder,
+  allocateMixId,
+  ensureUniqueMixIds,
+  uniqueStrings,
   type Mix,
   type MixRecord,
   type MixesStore,
@@ -33,8 +35,12 @@ export async function readMixesStore(): Promise<MixesStore> {
       updatedAt?: string;
       mixes?: Array<Record<string, unknown>>;
       categoryOrder?: unknown;
+      ignoredDriveIds?: unknown;
+      ignoredFilenames?: unknown;
     };
-    const mixes = sortMixes((parsed.mixes ?? []).map(normalizeMixRecord));
+    const mixes = ensureUniqueMixIds(
+      sortMixes((parsed.mixes ?? []).map(normalizeMixRecord)),
+    );
     const categoryOrder = Array.isArray(parsed.categoryOrder)
       ? syncCategoryOrder(
           mixes,
@@ -48,6 +54,8 @@ export async function readMixesStore(): Promise<MixesStore> {
       updatedAt: parsed.updatedAt || new Date().toISOString(),
       mixes,
       categoryOrder,
+      ignoredDriveIds: uniqueStrings(parsed.ignoredDriveIds),
+      ignoredFilenames: uniqueStrings(parsed.ignoredFilenames),
     };
   } catch {
     return {
@@ -55,20 +63,26 @@ export async function readMixesStore(): Promise<MixesStore> {
       updatedAt: new Date().toISOString(),
       mixes: [],
       categoryOrder: [],
+      ignoredDriveIds: [],
+      ignoredFilenames: [],
     };
   }
 }
 
 export async function writeMixesStore(store: MixesStore): Promise<void> {
-  const mixes = sortMixes(store.mixes).map((mix, index) => ({
-    ...normalizeMixRecord(mix as unknown as Record<string, unknown>),
-    order: index,
-  }));
+  const mixes = ensureUniqueMixIds(
+    sortMixes(store.mixes).map((mix, index) => ({
+      ...normalizeMixRecord(mix as unknown as Record<string, unknown>),
+      order: index,
+    })),
+  ).map((mix, index) => ({ ...mix, order: index }));
   const next: MixesStore = {
     folderUrl: store.folderUrl || getDriveFolderUrl(),
     updatedAt: new Date().toISOString(),
     mixes,
     categoryOrder: syncCategoryOrder(mixes, store.categoryOrder ?? []),
+    ignoredDriveIds: uniqueStrings(store.ignoredDriveIds),
+    ignoredFilenames: uniqueStrings(store.ignoredFilenames),
   };
 
   await fs.mkdir(path.dirname(DATA_PATH), { recursive: true });
@@ -116,38 +130,62 @@ export async function getMixById(id: string): Promise<{
 export function mergeSyncedFiles(
   existing: MixRecord[],
   files: Array<{ id: string; name: string; pathDisplay: string }>,
+  ignored: { driveIds?: string[]; filenames?: string[] } = {},
 ): MixRecord[] {
-  const byFilename = new Map(existing.map((mix) => [mix.filename, mix]));
+  const remaining = [...existing];
   const next: MixRecord[] = [];
+  const usedIds = new Set<string>();
+  const ignoredDriveIds = new Set(uniqueStrings(ignored.driveIds));
+  const ignoredFilenames = new Set(uniqueStrings(ignored.filenames));
+
+  function takeMatch(
+    predicate: (mix: MixRecord) => boolean,
+  ): MixRecord | undefined {
+    const index = remaining.findIndex(predicate);
+    if (index < 0) return undefined;
+    const [mix] = remaining.splice(index, 1);
+    return mix;
+  }
 
   for (const file of files) {
-    const current = byFilename.get(file.name);
+    const current =
+      takeMatch((mix) => mix.filename === file.name) ??
+      takeMatch((mix) => Boolean(mix.driveId) && mix.driveId === file.id);
+
     if (current) {
+      if (current.id) usedIds.add(current.id);
       next.push({
         ...current,
         driveId: file.id,
         path: file.pathDisplay,
         filename: file.name,
       });
-      byFilename.delete(file.name);
-    } else {
-      next.push({
-        id: filenameToId(file.name),
-        filename: file.name,
-        title: filenameToTitle(file.name),
-        driveId: file.id,
-        path: file.pathDisplay,
-        visible: false,
-        order: existing.length + next.length,
-        coverUrl: null,
-        category: null,
-      });
+      continue;
     }
+
+    if (ignoredDriveIds.has(file.id) || ignoredFilenames.has(file.name)) {
+      continue;
+    }
+
+    next.push({
+      id: allocateMixId(file.name, usedIds),
+      filename: file.name,
+      title: filenameToTitle(file.name),
+      driveId: file.id,
+      path: file.pathDisplay,
+      visible: false,
+      order: existing.length + next.length,
+      coverUrl: null,
+      category: null,
+    });
   }
 
-  for (const leftover of byFilename.values()) {
+  for (const leftover of remaining) {
     next.push({ ...leftover, visible: false });
   }
 
-  return sortMixes(next).map((mix, index) => ({ ...mix, order: index }));
+  return ensureUniqueMixIds(sortMixes(next)).map((mix, index) => ({
+    ...mix,
+    order: index,
+  }));
 }

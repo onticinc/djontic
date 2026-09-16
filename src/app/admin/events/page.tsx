@@ -1,34 +1,31 @@
 import type { Metadata } from "next";
 import { AdminNav } from "@/components/AdminNav";
-import { MixesAdmin } from "@/components/MixesAdmin";
+import { EventsAdmin } from "@/components/EventsAdmin";
 
 export const metadata: Metadata = {
-  title: "Manage Mixes",
+  title: "Manage Events",
   robots: { index: false, follow: false },
 };
 
-export default function AdminMixesPage() {
+export default function AdminEventsPage() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
       <div className="max-w-2xl">
         <p className="text-xs uppercase tracking-[0.22em] text-steel">Backend</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-[-0.02em] text-white sm:text-5xl">
-          Manage Mixes
+          Manage Events
         </h1>
         <p className="mt-4 text-base leading-relaxed text-zinc-400">
-          Control featured mix order, visibility, categories (and category
-          order), and cover image URLs. Sync pulls new files from Google Drive —
-          new tracks stay hidden until you enable them. Delete removes a mix
-          from the site without deleting the Google Drive file. After saving,
-          commit{" "}
-          <code className="text-zinc-200">data/mixes.json</code> so production
+          Add upcoming dates with an event name, location, city, and state. The public events
+          page shows today and later. After saving, commit{" "}
+          <code className="text-zinc-200">data/events.json</code> so production
           stays in sync.
         </p>
-        <AdminNav current="mixes" />
+        <AdminNav current="events" />
       </div>
 
       <div className="mt-10">
-        <MixesAdmin />
+        <EventsAdmin />
       </div>
     </section>
   );

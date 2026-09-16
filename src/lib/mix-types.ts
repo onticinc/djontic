@@ -18,6 +18,10 @@ export type MixesStore = {
   mixes: MixRecord[];
   /** Display order for named categories on the mixes page. */
   categoryOrder: string[];
+  /** Drive file ids removed in admin; skipped on later syncs. */
+  ignoredDriveIds: string[];
+  /** Filenames removed in admin; skipped on later syncs. */
+  ignoredFilenames: string[];
 };
 
 export type Mix = {
@@ -54,6 +58,29 @@ export function filenameToId(filename: string): string {
     .replace(/^_+|_+$/g, "");
 }
 
+export function allocateMixId(filename: string, used: Set<string>): string {
+  const base = filenameToId(filename) || "mix";
+  let id = base;
+  let suffix = 2;
+  while (used.has(id)) {
+    id = `${base}_${suffix}`;
+    suffix += 1;
+  }
+  used.add(id);
+  return id;
+}
+
+export function ensureUniqueMixIds(mixes: MixRecord[]): MixRecord[] {
+  const used = new Set<string>();
+  return mixes.map((mix) => {
+    if (mix.id && !used.has(mix.id)) {
+      used.add(mix.id);
+      return mix;
+    }
+    return { ...mix, id: allocateMixId(mix.filename, used) };
+  });
+}
+
 export function sortMixes(mixes: MixRecord[]): MixRecord[] {
   return [...mixes].sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 }
@@ -69,6 +96,20 @@ export function normalizeCoverUrl(value: unknown): string | null {
   } catch {
     return null;
   }
+}
+
+export function uniqueStrings(values: unknown): string[] {
+  if (!Array.isArray(values)) return [];
+  const next: string[] = [];
+  const seen = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== "string") continue;
+    const trimmed = value.trim();
+    if (!trimmed || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    next.push(trimmed);
+  }
+  return next;
 }
 
 export function normalizeCategory(value: unknown): string | null {

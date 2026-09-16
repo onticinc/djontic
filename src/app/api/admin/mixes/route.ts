@@ -6,6 +6,7 @@ import {
   normalizeCategory,
   normalizeCoverUrl,
   syncCategoryOrder,
+  uniqueStrings,
   type MixRecord,
 } from "@/lib/mix-types";
 
@@ -26,6 +27,8 @@ export async function PUT(request: Request) {
     mixes?: MixRecord[];
     folderUrl?: string;
     categoryOrder?: string[];
+    ignoredDriveIds?: unknown;
+    ignoredFilenames?: unknown;
   };
 
   if (!Array.isArray(body.mixes)) {
@@ -52,6 +55,12 @@ export async function PUT(request: Request) {
         ? body.categoryOrder
         : current.categoryOrder,
     ),
+    ignoredDriveIds: Array.isArray(body.ignoredDriveIds)
+      ? uniqueStrings(body.ignoredDriveIds)
+      : current.ignoredDriveIds,
+    ignoredFilenames: Array.isArray(body.ignoredFilenames)
+      ? uniqueStrings(body.ignoredFilenames)
+      : current.ignoredFilenames,
   };
 
   await writeMixesStore(store);

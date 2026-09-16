@@ -62,6 +62,8 @@ export function MixesAdmin() {
       updatedAt: data.updatedAt,
       mixes: data.mixes,
       categoryOrder: data.categoryOrder ?? [],
+      ignoredDriveIds: data.ignoredDriveIds ?? [],
+      ignoredFilenames: data.ignoredFilenames ?? [],
     });
   }
 
@@ -121,6 +123,11 @@ export function MixesAdmin() {
   async function save(
     nextMixes: MixRecord[],
     nextCategoryOrder: string[] = categories,
+    nextIgnored: {
+      ignoredDriveIds?: string[];
+      ignoredFilenames?: string[];
+    } = {},
+    successMessage = "Saved",
   ) {
     if (!store) return;
     setBusy(true);
@@ -133,6 +140,10 @@ export function MixesAdmin() {
           folderUrl: store.folderUrl,
           mixes: nextMixes.map((mix, index) => ({ ...mix, order: index })),
           categoryOrder: nextCategoryOrder,
+          ignoredDriveIds:
+            nextIgnored.ignoredDriveIds ?? store.ignoredDriveIds,
+          ignoredFilenames:
+            nextIgnored.ignoredFilenames ?? store.ignoredFilenames,
         }),
       });
       const data = await response.json();
@@ -147,8 +158,10 @@ export function MixesAdmin() {
         updatedAt: next.updatedAt,
         mixes: next.mixes,
         categoryOrder: next.categoryOrder ?? [],
+        ignoredDriveIds: next.ignoredDriveIds ?? [],
+        ignoredFilenames: next.ignoredFilenames ?? [],
       });
-      setStatus("Saved");
+      setStatus(successMessage);
     } finally {
       setBusy(false);
     }
@@ -231,6 +244,40 @@ export function MixesAdmin() {
     const [item] = copy.splice(index, 1);
     copy.splice(target, 0, item);
     void save(mixes, copy);
+  }
+
+  function deleteMix(mix: MixRecord) {
+    if (!store) return;
+    const confirmed = window.confirm(
+      `Remove “${mix.title}” from the site? The Google Drive file is not deleted.`,
+    );
+    if (!confirmed) return;
+
+    const nextMixes = mixes.filter((item) => item.id !== mix.id);
+    const ignoredDriveIds = [...store.ignoredDriveIds];
+    const ignoredFilenames = [...store.ignoredFilenames];
+
+    if (
+      mix.driveId &&
+      !nextMixes.some((item) => item.driveId === mix.driveId) &&
+      !ignoredDriveIds.includes(mix.driveId)
+    ) {
+      ignoredDriveIds.push(mix.driveId);
+    }
+    if (
+      mix.filename &&
+      !nextMixes.some((item) => item.filename === mix.filename) &&
+      !ignoredFilenames.includes(mix.filename)
+    ) {
+      ignoredFilenames.push(mix.filename);
+    }
+
+    void save(
+      nextMixes,
+      syncCategoryOrder(nextMixes, store.categoryOrder),
+      { ignoredDriveIds, ignoredFilenames },
+      "Mix removed.",
+    );
   }
 
   if (!configured) {
@@ -400,7 +447,7 @@ export function MixesAdmin() {
 
           return (
             <li
-              key={mix.id}
+              key={`${mix.id}:${mix.filename}`}
               draggable={!busy}
               onDragStart={(event) => {
                 setDraggingId(mix.id);
@@ -504,20 +551,30 @@ export function MixesAdmin() {
                 </p>
               </div>
 
-              <label
-                className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-zinc-400"
+              <div
+                className="flex flex-col items-start gap-3 md:items-end"
                 onMouseDown={(event) => event.stopPropagation()}
               >
-                <input
-                  type="checkbox"
-                  checked={mix.visible}
-                  onChange={(event) =>
-                    updateMix(mix.id, { visible: event.target.checked })
-                  }
-                  className="size-4 accent-white"
-                />
-                Visible
-              </label>
+                <label className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-zinc-400">
+                  <input
+                    type="checkbox"
+                    checked={mix.visible}
+                    onChange={(event) =>
+                      updateMix(mix.id, { visible: event.target.checked })
+                    }
+                    className="size-4 accent-white"
+                  />
+                  Visible
+                </label>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => deleteMix(mix)}
+                  className="text-xs uppercase tracking-[0.16em] text-zinc-500 hover:text-white disabled:opacity-50"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           );
         })}

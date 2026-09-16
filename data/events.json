@@ -1,0 +1,21 @@
+{
+  "updatedAt": "2026-09-16T02:12:05.766Z",
+  "events": [
+    {
+      "id": "ad4a2aee-7622-4fe5-837c-f7f728db9da3",
+      "name": "Private Event",
+      "date": "2026-10-03",
+      "location": "River Run Lodge",
+      "city": "Sun Valley",
+      "state": "ID"
+    },
+    {
+      "id": "e51bd34c-93ef-4f62-835a-e37c7eac8398",
+      "name": "Private Event",
+      "date": "2026-10-10",
+      "location": "Larc Hill Vineyard",
+      "city": "Chelan",
+      "state": "WA"
+    }
+  ]
+}

@@ -1,60 +1,71 @@
 {
   "folderUrl": "https://drive.google.com/drive/folders/1UzGeGSL1lNlXrq0sNGCmPzUHz_GgoH1S?usp=drive_link",
-  "updatedAt": "2026-09-14T22:19:41.597Z",
+  "updatedAt": "2026-09-16T03:34:14.498Z",
   "mixes": [
     {
-      "id": "anything_goes_10_dj_ontic",
-      "filename": "anything_goes_10_dj_ontic.mp3",
+      "id": "www_djontic_com_anything_goes_10",
+      "filename": "www.DJONTIC.com - Anything Goes 10.mp3",
       "title": "Anything Goes 10",
       "driveId": "1yT7KpMs9-JhrybgHMu0GYJ6zWmGBDy9E",
-      "path": "/anything_goes_10_dj_ontic.mp3",
+      "path": "/www.DJONTIC.com - Anything Goes 10.mp3",
       "visible": true,
       "order": 0,
-      "coverUrl": "https://www.dropbox.com/scl/fi/qfovflqsho2l1ku9gio6v/anything-goes-10.jpg?rlkey=xu8pel7oez1oe64p2vsc6zd9l&st=0hq5mazy&dl=0",
+      "coverUrl": "https://www.dropbox.com/scl/fi/qfovflqsho2l1ku9gio6v/anything-goes-10.jpg?rlkey=xu8pel7oez1oe64p2vsc6zd9l&st=9slscfq0&dl=0",
       "category": "Anything Goes"
     },
     {
-      "id": "anything_goes_9_5_mixdown",
-      "filename": "anything_goes_9.5_mixdown.mp3",
+      "id": "www_djontic_com_anything_goes_9_5",
+      "filename": "www.DJONTIC.com - Anything Goes 9.5.mp3",
       "title": "Anything Goes 9.5",
       "driveId": "1C5Nx8NjwpV4Lh-0YaTC9bLC8gTj4_yup",
-      "path": "/anything_goes_9.5_mixdown.mp3",
+      "path": "/www.DJONTIC.com - Anything Goes 9.5.mp3",
       "visible": true,
       "order": 1,
-      "coverUrl": "https://www.dropbox.com/scl/fi/tiq7p5z0pe5mihs7bj7xh/anything-goes-9.5.png?rlkey=bsfqdp2t2yrskb3skmkrm1jca&st=sm8ffoa7&dl=0",
+      "coverUrl": "https://www.dropbox.com/scl/fi/qhgxp2hne6s8nebvlvdg8/anything-goes-6.png?rlkey=ob542k7u3lk06s1l7a8ppq1ws&st=takqx515&dl=0",
       "category": "Anything Goes"
     },
     {
-      "id": "anything_goes_9_mixdown",
-      "filename": "anything_goes_9_mixdown.mp3",
+      "id": "www_djontic_com_anything_goes_9",
+      "filename": "www.DJONTIC.com - Anything Goes 9.mp3",
       "title": "Anything Goes 9",
       "driveId": "1w219tRFrHlRMWtstmgOIOYxjWZV081lg",
-      "path": "/anything_goes_9_mixdown.mp3",
+      "path": "/www.DJONTIC.com - Anything Goes 9.mp3",
       "visible": true,
       "order": 2,
-      "coverUrl": "https://www.dropbox.com/scl/fi/leiibmir6ig4eqzmax180/anything-goes-9.jpg?rlkey=i0cmkl5q7nn12nbz19f47avcz&st=23q6acds&dl=0",
+      "coverUrl": "https://www.dropbox.com/scl/fi/leiibmir6ig4eqzmax180/anything-goes-9.jpg?rlkey=i0cmkl5q7nn12nbz19f47avcz&st=15oy2u04&dl=0",
       "category": "Anything Goes"
     },
     {
-      "id": "anything_goes_7_ontic",
-      "filename": "anything_goes_7_ontic.mp3",
+      "id": "www_djontic_com_anything_goes_8",
+      "filename": "www.DJONTIC.com - Anything Goes 8.mp3",
+      "title": "Anything Goes 8",
+      "driveId": "1YBEYLyqlDLLu7LVJZzty9mEBrtR-wfUq",
+      "path": "/www.DJONTIC.com - Anything Goes 8.mp3",
+      "visible": false,
+      "order": 3,
+      "coverUrl": "https://www.dropbox.com/scl/fi/fkhp232vuk0k846rpmytg/anything-goes-8.jpg?rlkey=o2no8qiiknssnjedrlahjc8on&st=9898l7fv&dl=0",
+      "category": "Anything Goes"
+    },
+    {
+      "id": "www_djontic_com_anything_goes_7",
+      "filename": "www.DJONTIC.com - Anything Goes 7.mp3",
       "title": "Anything Goes 7",
       "driveId": "1EciMSUgSsAprUpxkqEQFwTiTFTn_NRb3",
-      "path": "/anything_goes_7_ontic.mp3",
+      "path": "/www.DJONTIC.com - Anything Goes 7.mp3",
       "visible": true,
-      "order": 3,
+      "order": 4,
       "coverUrl": null,
       "category": "Anything Goes"
     },
     {
-      "id": "anything_goes_4",
-      "filename": "anything_goes_4.mp3",
-      "title": "Anything Goes 4",
-      "driveId": "1sjGB14M8djurZsXLluMgus-2C5Hc1lAP",
-      "path": "/anything_goes_4.mp3",
+      "id": "www_djontic_com_anything_goes_6",
+      "filename": "www.DJONTIC.com - Anything Goes 6.mp3",
+      "title": "Anything Goes 6",
+      "driveId": "1Bgi8u7uSgotpCEy5yIUbyMxV811CkFYK",
+      "path": "/www.DJONTIC.com - Anything Goes 6.mp3",
       "visible": true,
-      "order": 4,
-      "coverUrl": "https://www.dropbox.com/scl/fi/7w1a7rz64oes0337acvc1/anything-goes-4.png?rlkey=m9reeh2aphr7df3yvxw9mqn85&st=eoj9edc9&dl=0",
+      "order": 5,
+      "coverUrl": "https://www.dropbox.com/scl/fi/qhgxp2hne6s8nebvlvdg8/anything-goes-6.png?rlkey=ob542k7u3lk06s1l7a8ppq1ws&st=ne75h6ac&dl=0",
       "category": "Anything Goes"
     },
     {
@@ -63,9 +74,53 @@
       "title": "Anything Goes 5",
       "driveId": "1tBrRNsgTajIIJCSzUWanT_9Yv77Jp7Jy",
       "path": "/anything_goes_5_dj_ontic.mp3",
-      "visible": false,
-      "order": 5,
+      "visible": true,
+      "order": 6,
       "coverUrl": "https://www.dropbox.com/scl/fi/dew1vowsaj7aftuznw1bk/anything-goes-5.png?rlkey=9gehggf58l4lftioo5l5nn26w&st=plnsnuz3&dl=0",
+      "category": "Anything Goes"
+    },
+    {
+      "id": "www_djontic_com_anything_goes_4",
+      "filename": "www.DJONTIC.com - Anything Goes 4.mp3",
+      "title": "Anything Goes 4",
+      "driveId": "1sjGB14M8djurZsXLluMgus-2C5Hc1lAP",
+      "path": "/www.DJONTIC.com - Anything Goes 4.mp3",
+      "visible": true,
+      "order": 7,
+      "coverUrl": "https://www.dropbox.com/scl/fi/7w1a7rz64oes0337acvc1/anything-goes-4.png?rlkey=m9reeh2aphr7df3yvxw9mqn85&st=p7nt2l36&dl=0",
+      "category": "Anything Goes"
+    },
+    {
+      "id": "www_djontic_com_anything_goes_3",
+      "filename": "www.DJONTIC.com - Anything Goes 3.mp3",
+      "title": "Anything Goes 3",
+      "driveId": "1cEiprzrLEU9KUacP8kPbBIXFnhWRvng8",
+      "path": "/www.DJONTIC.com - Anything Goes 3.mp3",
+      "visible": true,
+      "order": 8,
+      "coverUrl": "https://www.dropbox.com/scl/fi/zttseksr2olny3edvcj8n/anything-goes-3.jpg?rlkey=tvvs3v34kylf3ofbs3ztwb22q&st=jso1wk53&dl=0",
+      "category": "Anything Goes"
+    },
+    {
+      "id": "www_djontic_com_anything_goes_2",
+      "filename": "www.DJONTIC.com - Anything Goes 2.mp3",
+      "title": "Anything Goes 2",
+      "driveId": "1HjFM5z9zbQ4MAkmVTBsjihyEw1iZjKTw",
+      "path": "/www.DJONTIC.com - Anything Goes 2.mp3",
+      "visible": true,
+      "order": 9,
+      "coverUrl": "https://www.dropbox.com/scl/fi/3th0zdnl90se4wppwbw16/anything-goes-2.jpg?rlkey=0ufqxhurpfiymn8szp3v4b3de&st=z2z7ip22&dl=0",
+      "category": "Anything Goes"
+    },
+    {
+      "id": "www_djontic_com_anything_goes",
+      "filename": "www.DJONTIC.com - Anything Goes.mp3",
+      "title": "Anything Goes",
+      "driveId": "1RHdxhab7TXijgh1xcYQ8q31Yaf1VgMoH",
+      "path": "/www.DJONTIC.com - Anything Goes.mp3",
+      "visible": true,
+      "order": 10,
+      "coverUrl": "https://www.dropbox.com/scl/fi/nix4avbim6mnktysmyo31/anything-goes.jpg?rlkey=g6f85jnwh886v8oghqvwd5jyh&st=3530x81g&dl=0",
       "category": "Anything Goes"
     },
     {
@@ -75,7 +130,7 @@
       "driveId": "1OdxVP1iGeaVZfNjJ9b2hVxnusfONIb-A",
       "path": "/high_fidelity_dj_ontic.mp3",
       "visible": true,
-      "order": 6,
+      "order": 11,
       "coverUrl": "https://www.dropbox.com/scl/fi/3335x8ref5yugh7uzt5br/high-fidelity.jpg?rlkey=aps21ywuu9pbciikzbq9hc8y3&st=4l1iup05&dl=0",
       "category": null
     },
@@ -86,7 +141,7 @@
       "driveId": "1avhZc1p00cXKYM0XJfNZEa--ovGjEhRe",
       "path": "/80s_free_style_mix.mp3",
       "visible": true,
-      "order": 7,
+      "order": 12,
       "coverUrl": "https://www.dropbox.com/scl/fi/a88bz15kgta0s4zvyqa14/accidently-80s.jpg?rlkey=8kibxmldcab552k0vwod03rf1&st=3gemgcrm&dl=0",
       "category": null
     },
@@ -97,7 +152,7 @@
       "driveId": "1PvguRuoCZ1y_uS1duTCIHKYkG5mv-6Pd",
       "path": "/C89_July_4th_2015_DJ_ONTIC.mp3",
       "visible": false,
-      "order": 8,
+      "order": 13,
       "coverUrl": "https://www.dropbox.com/scl/fi/ifwv9o6siaiuj9klbs5zm/c89-4th-bbq-mix.png?rlkey=ed2fby2n70ftm4ec060uafkf4&st=9pe4aejm&dl=0",
       "category": "Radio"
     },
@@ -108,7 +163,7 @@
       "driveId": "16VejchoT-5gkLRCWU1kXjrB1nUyaaVYi",
       "path": "/c895_Mixgiving_Weekend_2016_Part_1_of_2_dj_ontic.mp3",
       "visible": true,
-      "order": 9,
+      "order": 14,
       "coverUrl": "https://www.dropbox.com/scl/fi/0r9v9vliyf93s2nvi0rfm/c89.5-mix-giving.png?rlkey=kd0hdse6bouosa6zm5yq5c612&st=5cen27fz&dl=0",
       "category": "Radio"
     },
@@ -119,7 +174,7 @@
       "driveId": "1MlxWkIBYaK0skaXmP7wt_1TKtPYYaesz",
       "path": "/c895_Mixgiving_Weekend_2016_Part_2_of_2_dj_ontic.mp3",
       "visible": true,
-      "order": 10,
+      "order": 15,
       "coverUrl": "https://www.dropbox.com/scl/fi/0r9v9vliyf93s2nvi0rfm/c89.5-mix-giving.png?rlkey=kd0hdse6bouosa6zm5yq5c612&st=5cen27fz&dl=0",
       "category": "Radio"
     },
@@ -130,8 +185,8 @@
       "driveId": "1Es_bFCUfOrSfVhroSAbQSdSQ5MQw7Spt",
       "path": "/Insomnia Mix (01_26_15) (Dirty).mp3",
       "visible": true,
-      "order": 11,
-      "coverUrl": "https://www.dropbox.com/scl/fi/ofklf9yn0bm2nxi55oy2l/insomnia-mix.png?rlkey=989t1m8rwuohufb0q9jb2g5lb&st=g5tck1si&dl=0",
+      "order": 16,
+      "coverUrl": "https://www.dropbox.com/scl/fi/j3n0rqmdhp5e9uimscz77/insomnia-mix.jpg?rlkey=85wpopvgxlfxeuwmrbw8r003o&st=php7mg5q&dl=0",
       "category": "Live"
     },
     {
@@ -140,8 +195,8 @@
       "title": "Live at Anchor",
       "driveId": "1NOUWSoRR3HUbsafErDQ8w5wIffNdYAXk",
       "path": "/live_at_anchor_bobbi_birthday.mp3",
-      "visible": true,
-      "order": 12,
+      "visible": false,
+      "order": 17,
       "coverUrl": "https://www.dropbox.com/scl/fi/xnrn2lk78465mqu874b1h/live-at-the-anchor-tavern.png?rlkey=kattj0mfb6o0lf0woer3o0xbu&st=cgzlkz2g&dl=0",
       "category": "Live"
     },
@@ -152,18 +207,18 @@
       "driveId": "1yHfV6Pv46blpYJXK3DqECTK9unGaA11I",
       "path": "/live_at_saharas_4_20_14.mp3",
       "visible": true,
-      "order": 13,
+      "order": 18,
       "coverUrl": null,
       "category": "Live"
     },
     {
       "id": "makenna_mix",
       "filename": "makenna_mix.mp3",
-      "title": "Makenna Mix",
+      "title": "Makenna House Party Mix",
       "driveId": "1nRH_gIQcjwSTvnAZQEsYlTXFyd-ijAKr",
       "path": "/makenna_mix.mp3",
-      "visible": false,
-      "order": 14,
+      "visible": true,
+      "order": 19,
       "coverUrl": null,
       "category": "Live"
     },
@@ -173,10 +228,10 @@
       "title": "Ontic Goes Dubstep 2",
       "driveId": "1NkKaPW2c6uDru31drPmYGm8i9Grei8vc",
       "path": "/ONTIC_GOES_DUBSTEP2.mp3",
-      "visible": false,
-      "order": 15,
+      "visible": true,
+      "order": 20,
       "coverUrl": null,
-      "category": null
+      "category": "Live"
     },
     {
       "id": "00s_hip_hop_practice",
@@ -185,9 +240,9 @@
       "driveId": "1SrsPMBpAEjxKI8DNFYH9cr-meLc7vDfy",
       "path": "/00s_hip_hop_practice.mp3",
       "visible": false,
-      "order": 16,
+      "order": 21,
       "coverUrl": null,
-      "category": null
+      "category": "Live"
     },
     {
       "id": "anything_goes_live_feb_2023",
@@ -196,7 +251,7 @@
       "driveId": "1i8cvm1051rRZnP-zW5j5sKIYs5weIS-9",
       "path": "/anything_goes_live_feb_2023.mp3",
       "visible": true,
-      "order": 17,
+      "order": 22,
       "coverUrl": null,
       "category": null
     },
@@ -207,7 +262,7 @@
       "driveId": "0B2B7sK2bx_uUaGRCMTRwa1psV3M",
       "path": "/c89_4th_mix_ontic_part_2.mp3",
       "visible": true,
-      "order": 18,
+      "order": 23,
       "coverUrl": "https://www.dropbox.com/scl/fi/ifwv9o6siaiuj9klbs5zm/c89-4th-bbq-mix.png?rlkey=ed2fby2n70ftm4ec060uafkf4&st=dv5rxeku&dl=0",
       "category": "Radio"
     },
@@ -218,7 +273,7 @@
       "driveId": "0B2B7sK2bx_uUdk5Xd1NDLW9NZ28",
       "path": "/c89_4th_mix_part_1_ontic.mp3",
       "visible": true,
-      "order": 19,
+      "order": 24,
       "coverUrl": "https://www.dropbox.com/scl/fi/ifwv9o6siaiuj9klbs5zm/c89-4th-bbq-mix.png?rlkey=ed2fby2n70ftm4ec060uafkf4&st=dv5rxeku&dl=0",
       "category": "Radio"
     },
@@ -229,7 +284,7 @@
       "driveId": "1BF6lNZgmLxD9jvQoFvT8b3lHuGCgbN6s",
       "path": "/random_mix_unpublished_dj_ontic_mixdown.mp3",
       "visible": false,
-      "order": 20,
+      "order": 25,
       "coverUrl": null,
       "category": null
     },
@@ -240,7 +295,7 @@
       "driveId": "1Ygx1xL2j89RgFTWUn0SLrwYluidEh9w8",
       "path": "/Rap Music_From_The_Middle_Of_Nowhere.mp3",
       "visible": true,
-      "order": 21,
+      "order": 26,
       "coverUrl": null,
       "category": null
     },
@@ -251,7 +306,7 @@
       "driveId": "1ftLC2AVGpI79kio63X8SV3vJwuibGvuJ",
       "path": "/risk_one_born_day_mix_by_dj_ontic_get_well_homie.mp3",
       "visible": false,
-      "order": 22,
+      "order": 27,
       "coverUrl": null,
       "category": null
     },
@@ -262,7 +317,7 @@
       "driveId": "1gOfWuxSY1x8JWnygBQcAe76deObm7YND",
       "path": "/z-103_mixshow_demo.mp3",
       "visible": false,
-      "order": 23,
+      "order": 28,
       "coverUrl": null,
       "category": null
     }
@@ -271,5 +326,11 @@
     "Anything Goes",
     "Radio",
     "Live"
+  ],
+  "ignoredDriveIds": [],
+  "ignoredFilenames": [
+    "anything_goes_7_ontic.mp3",
+    "www.DJONTIC.com - Anything Goes 5.mp3",
+    "anything_goes_4.mp3"
   ]
 }

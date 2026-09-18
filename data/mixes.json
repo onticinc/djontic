@@ -1,6 +1,6 @@
 {
   "folderUrl": "https://drive.google.com/drive/folders/1UzGeGSL1lNlXrq0sNGCmPzUHz_GgoH1S?usp=drive_link",
-  "updatedAt": "2026-09-16T03:34:14.498Z",
+  "updatedAt": "2026-09-18T02:16:29.062Z",
   "mixes": [
     {
       "id": "www_djontic_com_anything_goes_10",
@@ -132,7 +132,7 @@
       "visible": true,
       "order": 11,
       "coverUrl": "https://www.dropbox.com/scl/fi/3335x8ref5yugh7uzt5br/high-fidelity.jpg?rlkey=aps21ywuu9pbciikzbq9hc8y3&st=4l1iup05&dl=0",
-      "category": null
+      "category": "Studio Mashup Mix"
     },
     {
       "id": "80s_free_style_mix",
@@ -143,7 +143,7 @@
       "visible": true,
       "order": 12,
       "coverUrl": "https://www.dropbox.com/scl/fi/a88bz15kgta0s4zvyqa14/accidently-80s.jpg?rlkey=8kibxmldcab552k0vwod03rf1&st=3gemgcrm&dl=0",
-      "category": null
+      "category": "Live"
     },
     {
       "id": "c89_july_4th_2015_dj_ontic",
@@ -325,7 +325,8 @@
   "categoryOrder": [
     "Anything Goes",
     "Radio",
-    "Live"
+    "Live",
+    "Studio Mashup Mix"
   ],
   "ignoredDriveIds": [],
   "ignoredFilenames": [

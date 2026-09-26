@@ -1,18 +1,47 @@
 "use client";
 
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useMutation, useQuery } from "convex/react";
 import { useEffect, useMemo, useState } from "react";
+import { api } from "@convex/_generated/api";
+import { AdminGate } from "@/components/AdminGate";
 import {
   syncCategoryOrder,
   type MixRecord,
   type MixesStore,
 } from "@/lib/mix-types";
 
-export function MixesAdmin() {
-  const [password, setPassword] = useState("");
-  const [authenticated, setAuthenticated] = useState(false);
-  const [configured, setConfigured] = useState(true);
+function docToMix(doc: {
+  mixKey: string;
+  filename: string;
+  title: string;
+  driveId: string | null;
+  path: string;
+  visible: boolean;
+  order: number;
+  coverUrl: string | null;
+  category: string | null;
+}): MixRecord {
+  return {
+    id: doc.mixKey,
+    filename: doc.filename,
+    title: doc.title,
+    driveId: doc.driveId,
+    path: doc.path,
+    visible: doc.visible,
+    order: doc.order,
+    coverUrl: doc.coverUrl,
+    category: doc.category,
+  };
+}
+
+function MixesAdminPanel() {
+  const { signOut } = useAuthActions();
+  const adminStore = useQuery(api.mixes.getAdminStore);
+  const playCounts = useQuery(api.playCounts.getAll) ?? {};
+  const replaceAll = useMutation(api.mixes.replaceAll);
+
   const [store, setStore] = useState<MixesStore | null>(null);
-  const [playCounts, setPlayCounts] = useState<Record<string, number>>({});
   const [status, setStatus] = useState<string | null>(null);
   const [driveStatus, setDriveStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -20,6 +49,22 @@ export function MixesAdmin() {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [draggingCategory, setDraggingCategory] = useState<string | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!adminStore) return;
+    setStore({
+      folderUrl: adminStore.folderUrl,
+      updatedAt: adminStore.updatedAt,
+      mixes: adminStore.mixes.map(docToMix),
+      categoryOrder: adminStore.categoryOrder,
+      ignoredDriveIds: adminStore.ignoredDriveIds,
+      ignoredFilenames: adminStore.ignoredFilenames,
+    });
+  }, [adminStore]);
+
+  useEffect(() => {
+    void loadDriveStatus();
+  }, []);
 
   const mixes = useMemo(
     () => [...(store?.mixes ?? [])].sort((a, b) => a.order - b.order),
@@ -30,42 +75,6 @@ export function MixesAdmin() {
     () => syncCategoryOrder(mixes, store?.categoryOrder ?? []),
     [mixes, store?.categoryOrder],
   );
-
-  useEffect(() => {
-    void (async () => {
-      const response = await fetch("/api/admin/login");
-      const data = (await response.json()) as {
-        configured: boolean;
-        authenticated: boolean;
-      };
-      setConfigured(data.configured);
-      setAuthenticated(data.authenticated);
-      if (data.authenticated) {
-        await loadMixes();
-        await loadDriveStatus();
-      }
-    })();
-  }, []);
-
-  async function loadMixes() {
-    const response = await fetch("/api/admin/mixes");
-    if (!response.ok) {
-      setAuthenticated(false);
-      return;
-    }
-    const data = (await response.json()) as MixesStore & {
-      playCounts?: Record<string, number>;
-    };
-    setPlayCounts(data.playCounts ?? {});
-    setStore({
-      folderUrl: data.folderUrl,
-      updatedAt: data.updatedAt,
-      mixes: data.mixes,
-      categoryOrder: data.categoryOrder ?? [],
-      ignoredDriveIds: data.ignoredDriveIds ?? [],
-      ignoredFilenames: data.ignoredFilenames ?? [],
-    });
-  }
 
   async function loadDriveStatus() {
     try {
@@ -89,37 +98,6 @@ export function MixesAdmin() {
     }
   }
 
-  async function login(event: React.FormEvent) {
-    event.preventDefault();
-    setBusy(true);
-    setStatus(null);
-    try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-      const data = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        setStatus(data.error || "Login failed");
-        return;
-      }
-      setAuthenticated(true);
-      setPassword("");
-      await loadMixes();
-      await loadDriveStatus();
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function logout() {
-    await fetch("/api/admin/login", { method: "DELETE" });
-    setAuthenticated(false);
-    setStore(null);
-    setPlayCounts({});
-  }
-
   async function save(
     nextMixes: MixRecord[],
     nextCategoryOrder: string[] = categories,
@@ -133,35 +111,42 @@ export function MixesAdmin() {
     setBusy(true);
     setStatus(null);
     try {
-      const response = await fetch("/api/admin/mixes", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          folderUrl: store.folderUrl,
-          mixes: nextMixes.map((mix, index) => ({ ...mix, order: index })),
-          categoryOrder: nextCategoryOrder,
-          ignoredDriveIds:
-            nextIgnored.ignoredDriveIds ?? store.ignoredDriveIds,
-          ignoredFilenames:
-            nextIgnored.ignoredFilenames ?? store.ignoredFilenames,
-        }),
+      const ordered = nextMixes.map((mix, index) => ({ ...mix, order: index }));
+      const ignoredDriveIds =
+        nextIgnored.ignoredDriveIds ?? store.ignoredDriveIds;
+      const ignoredFilenames =
+        nextIgnored.ignoredFilenames ?? store.ignoredFilenames;
+      const categoryOrder = syncCategoryOrder(ordered, nextCategoryOrder);
+
+      await replaceAll({
+        mixes: ordered.map((mix) => ({
+          mixKey: mix.id,
+          filename: mix.filename,
+          title: mix.title,
+          driveId: mix.driveId,
+          path: mix.path,
+          visible: mix.visible,
+          order: mix.order,
+          coverUrl: mix.coverUrl,
+          category: mix.category,
+        })),
+        folderUrl: store.folderUrl,
+        categoryOrder,
+        ignoredDriveIds,
+        ignoredFilenames,
       });
-      const data = await response.json();
-      if (!response.ok) {
-        setStatus(data.error || "Save failed");
-        return;
-      }
-      const next = data as MixesStore & { playCounts?: Record<string, number> };
-      setPlayCounts(next.playCounts ?? playCounts);
+
       setStore({
-        folderUrl: next.folderUrl,
-        updatedAt: next.updatedAt,
-        mixes: next.mixes,
-        categoryOrder: next.categoryOrder ?? [],
-        ignoredDriveIds: next.ignoredDriveIds ?? [],
-        ignoredFilenames: next.ignoredFilenames ?? [],
+        ...store,
+        mixes: ordered,
+        categoryOrder,
+        ignoredDriveIds,
+        ignoredFilenames,
+        updatedAt: new Date().toISOString(),
       });
       setStatus(successMessage);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Save failed");
     } finally {
       setBusy(false);
     }
@@ -280,37 +265,8 @@ export function MixesAdmin() {
     );
   }
 
-  if (!configured) {
-    return (
-      <p className="text-zinc-400">
-        Set <code className="text-zinc-200">ADMIN_PASSWORD</code> in{" "}
-        <code className="text-zinc-200">.env</code> to unlock the mixes admin.
-      </p>
-    );
-  }
-
-  if (!authenticated) {
-    return (
-      <form onSubmit={login} className="max-w-sm space-y-4">
-        <label className="block text-sm text-zinc-400">
-          Admin password
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="mt-2 w-full border border-white/15 bg-black px-3 py-2 text-white outline-none focus:border-white/40"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={busy}
-          className="inline-flex h-11 items-center bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-black disabled:opacity-50"
-        >
-          Sign in
-        </button>
-        {status ? <p className="text-sm text-red-300">{status}</p> : null}
-      </form>
-    );
+  if (!store) {
+    return <p className="text-sm text-zinc-500">Loading mixes…</p>;
   }
 
   return (
@@ -334,7 +290,7 @@ export function MixesAdmin() {
         </button>
         <button
           type="button"
-          onClick={() => void logout()}
+          onClick={() => void signOut()}
           className="inline-flex h-11 items-center px-3 text-xs uppercase tracking-[0.16em] text-zinc-500 hover:text-white"
         >
           Log out
@@ -580,5 +536,13 @@ export function MixesAdmin() {
         })}
       </ul>
     </div>
+  );
+}
+
+export function MixesAdmin() {
+  return (
+    <AdminGate unlockLabel="mixes">
+      <MixesAdminPanel />
+    </AdminGate>
   );
 }

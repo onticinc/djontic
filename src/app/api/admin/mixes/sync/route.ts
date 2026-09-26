@@ -1,5 +1,6 @@
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireConvexAdmin } from "@/lib/convex-admin";
 import {
   getDriveFolderUrl,
   isDriveConfigured,
@@ -8,7 +9,7 @@ import {
 import { mergeSyncedFiles, readMixesStore, writeMixesStore } from "@/lib/mixes";
 
 export async function POST() {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireConvexAdmin();
   if (unauthorized) return unauthorized;
 
   if (!isDriveConfigured()) {
@@ -22,6 +23,7 @@ export async function POST() {
   }
 
   try {
+    const token = await convexAuthNextjsToken();
     const current = await readMixesStore();
     const folderUrl = getDriveFolderUrl();
     const files = await listMixFilesFromDrive();
@@ -30,14 +32,17 @@ export async function POST() {
       filenames: current.ignoredFilenames,
     });
 
-    await writeMixesStore({
-      folderUrl,
-      updatedAt: new Date().toISOString(),
-      mixes,
-      categoryOrder: current.categoryOrder,
-      ignoredDriveIds: current.ignoredDriveIds,
-      ignoredFilenames: current.ignoredFilenames,
-    });
+    await writeMixesStore(
+      {
+        folderUrl,
+        updatedAt: new Date().toISOString(),
+        mixes,
+        categoryOrder: current.categoryOrder,
+        ignoredDriveIds: current.ignoredDriveIds,
+        ignoredFilenames: current.ignoredFilenames,
+      },
+      token,
+    );
 
     return NextResponse.json({
       ok: true,

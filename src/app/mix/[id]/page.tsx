@@ -61,7 +61,7 @@ export default async function MixPage({ params }: Props) {
         </p>
       </div>
 
-      <div className="mt-10 mesh-panel border border-white/10 px-4 py-2 sm:px-8 sm:py-4">
+      <div className="mt-10">
         <MixList mixes={[mix]} />
       </div>
 

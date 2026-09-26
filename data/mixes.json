@@ -1,6 +1,6 @@
 {
   "folderUrl": "https://drive.google.com/drive/folders/1UzGeGSL1lNlXrq0sNGCmPzUHz_GgoH1S?usp=drive_link",
-  "updatedAt": "2026-09-18T02:16:29.062Z",
+  "updatedAt": "2026-09-26T17:07:09.047Z",
   "mixes": [
     {
       "id": "www_djontic_com_anything_goes_10",
@@ -132,7 +132,7 @@
       "visible": true,
       "order": 11,
       "coverUrl": "https://www.dropbox.com/scl/fi/3335x8ref5yugh7uzt5br/high-fidelity.jpg?rlkey=aps21ywuu9pbciikzbq9hc8y3&st=4l1iup05&dl=0",
-      "category": "Studio Mashup Mix"
+      "category": "College Project"
     },
     {
       "id": "80s_free_style_mix",
@@ -253,7 +253,7 @@
       "visible": true,
       "order": 22,
       "coverUrl": null,
-      "category": null
+      "category": "Live"
     },
     {
       "id": "c89_4th_mix_ontic_part_2",
@@ -302,10 +302,10 @@
     {
       "id": "risk_one_born_day_mix_by_dj_ontic_get_well_homie",
       "filename": "risk_one_born_day_mix_by_dj_ontic_get_well_homie.mp3",
-      "title": "Risk One Born Day Mix By Get Well Homie",
+      "title": "Anything Goes 7.5",
       "driveId": "1ftLC2AVGpI79kio63X8SV3vJwuibGvuJ",
       "path": "/risk_one_born_day_mix_by_dj_ontic_get_well_homie.mp3",
-      "visible": false,
+      "visible": true,
       "order": 27,
       "coverUrl": null,
       "category": null
@@ -326,7 +326,7 @@
     "Anything Goes",
     "Radio",
     "Live",
-    "Studio Mashup Mix"
+    "College Project"
   ],
   "ignoredDriveIds": [],
   "ignoredFilenames": [

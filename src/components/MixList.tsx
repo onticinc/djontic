@@ -1,7 +1,7 @@
 "use client";
 
 import { AudioPlayer } from "@/components/AudioPlayer";
-import type { Mix } from "@/lib/mixes";
+import type { Mix } from "@/lib/mix-types";
 
 type MixGroup = {
   key: string;
@@ -50,13 +50,11 @@ export function MixList({
   const showHeadings = groups.length > 1 || Boolean(groups[0]?.label);
 
   return (
-    <>
-      {groups.map((group, groupIndex) => (
-        <div
+    <div className="space-y-10">
+      {groups.map((group) => (
+        <section
           key={group.key}
-          className={
-            groupIndex > 0 ? "mt-8 border-t border-white/10 pt-8" : undefined
-          }
+          className="mesh-panel border border-white/10 bg-[#080808] px-4 py-2 sm:px-8 sm:py-4"
         >
           {showHeadings ? (
             <h2 className="mb-5 font-display text-3xl tracking-[0.08em] text-white sm:text-4xl">
@@ -66,8 +64,8 @@ export function MixList({
           {group.mixes.map((mix) => (
             <AudioPlayer key={mix.id} mix={mix} />
           ))}
-        </div>
+        </section>
       ))}
-    </>
+    </div>
   );
 }

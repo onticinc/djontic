@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Mix } from "@/lib/mixes";
+import type { Mix } from "@/lib/mix-types";
 
 export type PlayableMix = Pick<
   Mix,

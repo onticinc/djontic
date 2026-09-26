@@ -12,7 +12,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <MixPlaybackProvider>
       <SiteBanner />
       <SiteHeader />
-      <main className="flex-1 pb-24">{children}</main>
+      <main className="flex-1 bg-[#050505] pb-24">{children}</main>
       <SiteFooter />
       <NowPlayingBar />
     </MixPlaybackProvider>

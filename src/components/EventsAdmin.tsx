@@ -1,11 +1,14 @@
 "use client";
 
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useMutation, useQuery } from "convex/react";
 import { useEffect, useMemo, useState } from "react";
+import { api } from "@convex/_generated/api";
+import { AdminGate } from "@/components/AdminGate";
 import {
   sortEvents,
   todayIsoDate,
   type EventRecord,
-  type EventsStore,
 } from "@/lib/event-types";
 
 const EMPTY_DRAFT = {
@@ -16,91 +19,43 @@ const EMPTY_DRAFT = {
   state: "",
 };
 
-export function EventsAdmin() {
-  const [password, setPassword] = useState("");
-  const [authenticated, setAuthenticated] = useState(false);
-  const [configured, setConfigured] = useState(true);
+function EventsAdminPanel() {
+  const { signOut } = useAuthActions();
+  const remoteEvents = useQuery(api.events.listAll);
+  const replaceAll = useMutation(api.events.replaceAll);
+
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [draft, setDraft] = useState(EMPTY_DRAFT);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const sorted = useMemo(() => sortEvents(events), [events]);
-
-  const today = todayIsoDate();
-
   useEffect(() => {
-    void (async () => {
-      const response = await fetch("/api/admin/login");
-      const data = (await response.json()) as {
-        configured: boolean;
-        authenticated: boolean;
-      };
-      setConfigured(data.configured);
-      setAuthenticated(data.authenticated);
-      if (data.authenticated) {
-        await loadEvents();
-      }
-    })();
-  }, []);
+    if (!remoteEvents) return;
+    setEvents(remoteEvents);
+  }, [remoteEvents]);
 
-  async function loadEvents() {
-    const response = await fetch("/api/admin/events");
-    if (!response.ok) {
-      setAuthenticated(false);
-      return;
-    }
-    const data = (await response.json()) as EventsStore;
-    setEvents(data.events);
-  }
-
-  async function login(event: React.FormEvent) {
-    event.preventDefault();
-    setBusy(true);
-    setStatus(null);
-    try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-      const data = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        setStatus(data.error || "Login failed");
-        return;
-      }
-      setAuthenticated(true);
-      setPassword("");
-      await loadEvents();
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function logout() {
-    await fetch("/api/admin/login", { method: "DELETE" });
-    setAuthenticated(false);
-    setEvents([]);
-  }
+  const sorted = useMemo(() => sortEvents(events), [events]);
+  const today = todayIsoDate();
 
   async function save(nextEvents: EventRecord[], successMessage = "Saved") {
     setBusy(true);
     setStatus(null);
     try {
-      const response = await fetch("/api/admin/events", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ events: nextEvents }),
+      await replaceAll({
+        events: nextEvents.map(({ date, name, location, city, state }) => ({
+          date,
+          name,
+          location,
+          city,
+          state,
+        })),
       });
-      const data = await response.json();
-      if (!response.ok) {
-        setStatus(data.error || "Save failed");
-        return false;
-      }
-      const next = data as EventsStore;
-      setEvents(next.events);
+      setEvents(nextEvents);
       setStatus(successMessage);
       return true;
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Save failed");
+      return false;
     } finally {
       setBusy(false);
     }
@@ -136,37 +91,8 @@ export function EventsAdmin() {
     setStatus("Event removed — save to publish the change.");
   }
 
-  if (!configured) {
-    return (
-      <p className="text-zinc-400">
-        Set <code className="text-zinc-200">ADMIN_PASSWORD</code> in{" "}
-        <code className="text-zinc-200">.env</code> to unlock the events admin.
-      </p>
-    );
-  }
-
-  if (!authenticated) {
-    return (
-      <form onSubmit={login} className="max-w-sm space-y-4">
-        <label className="block text-sm text-zinc-400">
-          Admin password
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="mt-2 w-full border border-white/15 bg-black px-3 py-2 text-white outline-none focus:border-white/40"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={busy}
-          className="inline-flex h-11 items-center bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-black disabled:opacity-50"
-        >
-          Sign in
-        </button>
-        {status ? <p className="text-sm text-red-300">{status}</p> : null}
-      </form>
-    );
+  if (remoteEvents === undefined) {
+    return <p className="text-sm text-zinc-500">Loading events…</p>;
   }
 
   return (
@@ -182,7 +108,7 @@ export function EventsAdmin() {
         </button>
         <button
           type="button"
-          onClick={() => void logout()}
+          onClick={() => void signOut()}
           className="inline-flex h-11 items-center px-3 text-xs uppercase tracking-[0.16em] text-zinc-500 hover:text-white"
         >
           Log out
@@ -363,5 +289,13 @@ export function EventsAdmin() {
         </ul>
       )}
     </div>
+  );
+}
+
+export function EventsAdmin() {
+  return (
+    <AdminGate unlockLabel="events">
+      <EventsAdminPanel />
+    </AdminGate>
   );
 }

@@ -22,12 +22,11 @@
 
 html {
   scroll-behavior: smooth;
+  background: #050505;
 }
 
 body {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, #1a1a1a 0%, transparent 55%),
-    linear-gradient(180deg, #0a0a0a 0%, #050505 40%, #000 100%);
+  background: #050505;
   color: var(--foreground);
   font-family: var(--font-archivo), system-ui, sans-serif;
   min-height: 100%;

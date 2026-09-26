@@ -16,10 +16,9 @@ export default function AdminEventsPage() {
           Manage Events
         </h1>
         <p className="mt-4 text-base leading-relaxed text-zinc-400">
-          Add upcoming dates with an event name, location, city, and state. The public events
-          page shows today and later. After saving, commit{" "}
-          <code className="text-zinc-200">data/events.json</code> so production
-          stays in sync.
+          Add upcoming dates with an event name, location, city, and state. The
+          public events page shows today and later. Changes save directly to
+          Convex.
         </p>
         <AdminNav current="events" />
       </div>

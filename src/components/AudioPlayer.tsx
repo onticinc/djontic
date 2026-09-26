@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { MixShareMenu } from "@/components/MixShareMenu";
 import { useMixPlayback } from "@/components/MixPlaybackProvider";
-import type { Mix } from "@/lib/mixes";
+import type { Mix } from "@/lib/mix-types";
 
 function formatTime(seconds: number) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";

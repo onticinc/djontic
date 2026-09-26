@@ -1,7 +1,7 @@
-import { promises as fs } from "fs";
-import path from "path";
-import { getPlayCounts } from "./play-counts";
+import { api } from "@convex/_generated/api";
+import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { getDriveFolderUrl } from "./gdrive";
+import { getPlayCounts } from "./play-counts";
 import {
   filenameToTitle,
   normalizeMixRecord,
@@ -17,76 +17,88 @@ import {
 
 export type { Mix, MixRecord, MixesStore };
 
-const DATA_PATH = path.join(process.cwd(), "data", "mixes.json");
-
 function artworkUrlFor(mix: MixRecord) {
   const base = `/api/mixes/${encodeURIComponent(mix.id)}/artwork`;
   if (!mix.coverUrl) return base;
-  // Bust browser cache when the cover link changes.
   const token = Buffer.from(mix.coverUrl).toString("base64url").slice(0, 12);
   return `${base}?c=${token}`;
 }
 
-export async function readMixesStore(): Promise<MixesStore> {
-  try {
-    const raw = await fs.readFile(DATA_PATH, "utf8");
-    const parsed = JSON.parse(raw) as {
-      folderUrl?: string;
-      updatedAt?: string;
-      mixes?: Array<Record<string, unknown>>;
-      categoryOrder?: unknown;
-      ignoredDriveIds?: unknown;
-      ignoredFilenames?: unknown;
-    };
-    const mixes = ensureUniqueMixIds(
-      sortMixes((parsed.mixes ?? []).map(normalizeMixRecord)),
-    );
-    const categoryOrder = Array.isArray(parsed.categoryOrder)
-      ? syncCategoryOrder(
-          mixes,
-          parsed.categoryOrder.filter(
-            (item): item is string => typeof item === "string",
-          ),
-        )
-      : syncCategoryOrder(mixes);
-    return {
-      folderUrl: parsed.folderUrl || getDriveFolderUrl(),
-      updatedAt: parsed.updatedAt || new Date().toISOString(),
-      mixes,
-      categoryOrder,
-      ignoredDriveIds: uniqueStrings(parsed.ignoredDriveIds),
-      ignoredFilenames: uniqueStrings(parsed.ignoredFilenames),
-    };
-  } catch {
-    return {
-      folderUrl: getDriveFolderUrl(),
-      updatedAt: new Date().toISOString(),
-      mixes: [],
-      categoryOrder: [],
-      ignoredDriveIds: [],
-      ignoredFilenames: [],
-    };
-  }
+function docToMixRecord(doc: {
+  mixKey: string;
+  filename: string;
+  title: string;
+  driveId: string | null;
+  path: string;
+  visible: boolean;
+  order: number;
+  coverUrl: string | null;
+  category: string | null;
+}): MixRecord {
+  return {
+    id: doc.mixKey,
+    filename: doc.filename,
+    title: doc.title,
+    driveId: doc.driveId,
+    path: doc.path,
+    visible: doc.visible,
+    order: doc.order,
+    coverUrl: doc.coverUrl,
+    category: doc.category,
+  };
 }
 
-export async function writeMixesStore(store: MixesStore): Promise<void> {
+export async function readMixesStore(): Promise<MixesStore> {
+  const [mixes, settings] = await Promise.all([
+    fetchQuery(api.mixes.listAll, {}),
+    fetchQuery(api.mixes.getSettings, {}),
+  ]);
+  const records = ensureUniqueMixIds(sortMixes(mixes.map(docToMixRecord)));
+  return {
+    folderUrl: settings.folderUrl || getDriveFolderUrl(),
+    updatedAt: settings.updatedAt || new Date().toISOString(),
+    mixes: records,
+    categoryOrder: syncCategoryOrder(records, settings.categoryOrder ?? []),
+    ignoredDriveIds: uniqueStrings(settings.ignoredDriveIds),
+    ignoredFilenames: uniqueStrings(settings.ignoredFilenames),
+  };
+}
+
+export async function writeMixesStore(
+  store: MixesStore,
+  token?: string,
+): Promise<void> {
   const mixes = ensureUniqueMixIds(
     sortMixes(store.mixes).map((mix, index) => ({
       ...normalizeMixRecord(mix as unknown as Record<string, unknown>),
       order: index,
     })),
   ).map((mix, index) => ({ ...mix, order: index }));
-  const next: MixesStore = {
-    folderUrl: store.folderUrl || getDriveFolderUrl(),
-    updatedAt: new Date().toISOString(),
-    mixes,
-    categoryOrder: syncCategoryOrder(mixes, store.categoryOrder ?? []),
-    ignoredDriveIds: uniqueStrings(store.ignoredDriveIds),
-    ignoredFilenames: uniqueStrings(store.ignoredFilenames),
-  };
+  const categoryOrder = syncCategoryOrder(mixes, store.categoryOrder ?? []);
+  const ignoredDriveIds = uniqueStrings(store.ignoredDriveIds);
+  const ignoredFilenames = uniqueStrings(store.ignoredFilenames);
 
-  await fs.mkdir(path.dirname(DATA_PATH), { recursive: true });
-  await fs.writeFile(DATA_PATH, `${JSON.stringify(next, null, 2)}\n`, "utf8");
+  await fetchMutation(
+    api.mixes.replaceAll,
+    {
+      mixes: mixes.map((mix) => ({
+        mixKey: mix.id,
+        filename: mix.filename,
+        title: mix.title,
+        driveId: mix.driveId,
+        path: mix.path,
+        visible: mix.visible,
+        order: mix.order,
+        coverUrl: mix.coverUrl,
+        category: mix.category,
+      })),
+      folderUrl: store.folderUrl || getDriveFolderUrl(),
+      categoryOrder,
+      ignoredDriveIds,
+      ignoredFilenames,
+    },
+    token ? { token } : undefined,
+  );
 }
 
 export async function getFeaturedMixes(): Promise<{
@@ -106,7 +118,6 @@ export async function getFeaturedMixes(): Promise<{
         filename: mix.filename,
         shareUrl: store.folderUrl,
         pageUrl: `/mix/${encodeURIComponent(mix.id)}`,
-        // ?v=2 busts browsers that cached the earlier 302→Drive redirect.
         streamUrl: `/api/mixes/${encodeURIComponent(mix.id)}/stream?v=2`,
         downloadUrl: `/api/mixes/${encodeURIComponent(mix.id)}/download`,
         artworkUrl: artworkUrlFor(mix),
@@ -121,10 +132,15 @@ export async function getMixById(id: string): Promise<{
   mix: MixRecord;
   folderUrl: string;
 } | null> {
-  const store = await readMixesStore();
-  const mix = store.mixes.find((item) => item.id === id);
-  if (!mix) return null;
-  return { mix, folderUrl: store.folderUrl };
+  const [doc, settings] = await Promise.all([
+    fetchQuery(api.mixes.getByKey, { mixKey: id }),
+    fetchQuery(api.mixes.getSettings, {}),
+  ]);
+  if (!doc) return null;
+  return {
+    mix: docToMixRecord(doc),
+    folderUrl: settings.folderUrl || getDriveFolderUrl(),
+  };
 }
 
 export function mergeSyncedFiles(

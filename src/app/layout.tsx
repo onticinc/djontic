@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Archivo, Bebas_Neue } from "next/font/google";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { AppShell } from "@/components/AppShell";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -28,14 +30,18 @@ export const metadata: Metadata = {
   ),
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${archivo.variable} ${bebas.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
-        <AppShell>{children}</AppShell>
+        <ConvexAuthNextjsServerProvider>
+          <ConvexClientProvider>
+            <AppShell>{children}</AppShell>
+          </ConvexClientProvider>
+        </ConvexAuthNextjsServerProvider>
       </body>
     </html>
   );

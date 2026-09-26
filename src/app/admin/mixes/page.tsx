@@ -19,10 +19,8 @@ export default function AdminMixesPage() {
           Control featured mix order, visibility, categories (and category
           order), and cover image URLs. Sync pulls new files from Google Drive —
           new tracks stay hidden until you enable them. Delete removes a mix
-          from the site without deleting the Google Drive file. After saving,
-          commit{" "}
-          <code className="text-zinc-200">data/mixes.json</code> so production
-          stays in sync.
+          from the site without deleting the Google Drive file. Changes save
+          directly to Convex.
         </p>
         <AdminNav current="mixes" />
       </div>

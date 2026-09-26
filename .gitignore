@@ -40,6 +40,9 @@ yarn-error.log*
 /data/artwork/
 /data/peaks/
 
+# local uploads (dev)
+/public/uploads/
+
 # vercel
 .vercel
 

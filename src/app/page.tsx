@@ -8,22 +8,22 @@ export default async function HomePage() {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-      <div className="fade-up mesh-panel border border-white/10 px-4 py-2 sm:px-8 sm:py-4">
         {mixes.length === 0 ? (
           <p className="py-8 text-zinc-400">
             No mixes are visible yet. Manage them at{" "}
             <a
-              href="/admin/mixes"
+              href="/admin"
               className="text-white underline-offset-4 hover:underline"
             >
-              /admin/mixes
+              /admin
             </a>
             .
           </p>
         ) : (
-          <MixList mixes={mixes} categoryOrder={categoryOrder} />
+          <div className="fade-up">
+            <MixList mixes={mixes} categoryOrder={categoryOrder} />
+          </div>
         )}
-      </div>
 
       <div className="fade-up-delay mt-14 flex flex-col gap-4 border-t border-white/10 pt-10 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-xl text-sm leading-relaxed text-zinc-400">

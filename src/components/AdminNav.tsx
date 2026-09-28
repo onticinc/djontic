@@ -13,7 +13,7 @@ export function AdminNav({
   current: "dashboard" | "mixes" | "events" | "weddings";
 }) {
   return (
-    <nav className="mt-5 flex flex-wrap gap-x-3 gap-y-1 text-sm text-zinc-500">
+    <nav className="mt-5 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-2">
       {LINKS.map((item, index) => {
         const active = item.key === current;
         return (
@@ -23,8 +23,8 @@ export function AdminNav({
               href={item.href}
               className={
                 active
-                  ? "text-white"
-                  : "text-zinc-500 underline-offset-4 hover:text-white hover:underline"
+                  ? "text-foreground"
+                  : "text-muted-2 underline-offset-4 hover:text-foreground hover:underline"
               }
             >
               {item.label}

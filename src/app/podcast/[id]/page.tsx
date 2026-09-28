@@ -45,9 +45,9 @@ export default async function PodcastEpisodePage({ params }: Props) {
   if (!configured) {
     return (
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        <p className="text-zinc-400">
+        <p className="text-muted">
           Connect YouTube by adding API keys to your{" "}
-          <code className="text-zinc-200">.env</code> file.
+          <code className="text-foreground">.env</code> file.
         </p>
       </section>
     );
@@ -56,7 +56,7 @@ export default async function PodcastEpisodePage({ params }: Props) {
   if (error) {
     return (
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        <p className="text-zinc-400">Couldn’t load this episode: {error}</p>
+        <p className="text-muted">Couldn’t load this episode: {error}</p>
       </section>
     );
   }
@@ -71,17 +71,17 @@ export default async function PodcastEpisodePage({ params }: Props) {
         <p className="text-xs uppercase tracking-[0.22em] text-steel">
           Eggs Podcast
         </p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.02em] text-white sm:text-5xl">
+        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.02em] text-foreground sm:text-5xl">
           {video.title}
         </h1>
         {video.publishedLabel ? (
-          <p className="mt-4 text-sm uppercase tracking-[0.16em] text-zinc-500">
+          <p className="mt-4 text-sm uppercase tracking-[0.16em] text-muted-2">
             {video.publishedLabel}
           </p>
         ) : null}
       </div>
 
-      <div className="mt-10 overflow-hidden border border-white/10 bg-black">
+      <div className="mt-10 overflow-hidden border border-border bg-surface">
         <div className="relative aspect-video w-full">
           <iframe
             src={embedUrl}
@@ -97,19 +97,19 @@ export default async function PodcastEpisodePage({ params }: Props) {
 
       {video.description.trim() ? (
         <div className="mt-10 max-w-3xl">
-          <h2 className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+          <h2 className="text-xs uppercase tracking-[0.22em] text-muted-2">
             About this episode
           </h2>
-          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-zinc-400">
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-muted">
             {video.description.trim()}
           </p>
         </div>
       ) : null}
 
-      <p className="mt-10 text-sm text-zinc-500">
+      <p className="mt-10 text-sm text-muted-2">
         <Link
           href="/podcast"
-          className="text-zinc-300 underline-offset-4 hover:underline"
+          className="text-muted underline-offset-4 hover:text-foreground hover:underline"
         >
           ← All Eggs Podcast episodes
         </Link>

@@ -1,17 +1,57 @@
 @import "tailwindcss";
 
-:root {
+:root,
+.dark {
+  color-scheme: dark;
   --background: #050505;
   --foreground: #f2f2f2;
   --steel: #b8b8b8;
-  --mesh: #101010;
+  --muted: #a1a1aa;
+  --muted-2: #71717a;
+  --panel: #080808;
+  --surface: #18181b;
+  --surface-2: #09090b;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.25);
+  --header: rgba(0, 0, 0, 0.9);
+  --overlay: rgba(0, 0, 0, 0.95);
+  --track: rgba(255, 255, 255, 0.2);
+  --mesh-dot: rgba(255, 255, 255, 0.06);
+  --mesh-glow: rgba(255, 255, 255, 0.05);
+}
+
+.light {
+  color-scheme: light;
+  --background: #f2f2f2;
+  --foreground: #121212;
+  --steel: #5c5c5c;
+  --muted: #52525b;
+  --muted-2: #71717a;
+  --panel: #ffffff;
+  --surface: #e8e8e8;
+  --surface-2: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.22);
+  --header: rgba(242, 242, 242, 0.92);
+  --overlay: rgba(255, 255, 255, 0.96);
+  --track: rgba(0, 0, 0, 0.15);
+  --mesh-dot: rgba(0, 0, 0, 0.06);
+  --mesh-glow: rgba(0, 0, 0, 0.04);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-steel: var(--steel);
-  --color-mesh: var(--mesh);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-panel: var(--panel);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-header: var(--header);
+  --color-overlay: var(--overlay);
   --font-sans: var(--font-archivo);
   --font-display: var(--font-bebas);
 }
@@ -22,11 +62,11 @@
 
 html {
   scroll-behavior: smooth;
-  background: #050505;
+  background: var(--background);
 }
 
 body {
-  background: #050505;
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-archivo), system-ui, sans-serif;
   min-height: 100%;
@@ -38,10 +78,10 @@ body {
 }
 
 .mesh-panel {
-  background-color: #080808;
+  background-color: var(--panel);
   background-image:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 55%),
-    radial-gradient(rgba(255, 255, 255, 0.06) 0.7px, transparent 0.7px);
+    radial-gradient(circle at center, var(--mesh-glow) 0%, transparent 55%),
+    radial-gradient(var(--mesh-dot) 0.7px, transparent 0.7px);
   background-size: auto, 10px 10px;
 }
 
@@ -101,7 +141,7 @@ body {
   height: 10px;
   margin-top: -4px;
   border-radius: 0;
-  background: #fff;
+  background: var(--foreground);
 }
 
 .mix-seek::-moz-range-track {
@@ -112,7 +152,7 @@ body {
 
 .mix-seek::-moz-range-progress {
   height: 2px;
-  background: #fff;
+  background: var(--foreground);
 }
 
 .mix-seek::-moz-range-thumb {
@@ -120,10 +160,10 @@ body {
   height: 10px;
   border: 0;
   border-radius: 0;
-  background: #fff;
+  background: var(--foreground);
 }
 
 ::selection {
-  background: #ffffff;
-  color: #000000;
+  background: var(--foreground);
+  color: var(--background);
 }

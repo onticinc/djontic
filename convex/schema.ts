@@ -26,6 +26,8 @@ export default defineSchema({
     filename: v.string(),
     title: v.string(),
     driveId: v.union(v.string(), v.null()),
+    /** Required for legacy Drive files affected by the security update. */
+    resourceKey: v.optional(v.union(v.string(), v.null())),
     path: v.string(),
     visible: v.boolean(),
     order: v.number(),

@@ -45,12 +45,7 @@ function waitForCanPlay(audio: HTMLAudioElement) {
     };
     const onFail = () => {
       cleanup();
-      reject(
-        new Error(
-          audio.error?.message ||
-            "Failed to load because no supported source was found.",
-        ),
-      );
+      reject(new Error("Unable to load this mix stream."));
     };
     const cleanup = () => {
       audio.removeEventListener("canplay", onReady);
@@ -186,7 +181,9 @@ export function MixPlaybackProvider({ children }: { children: ReactNode }) {
         if (interrupted) return;
 
         console.error("Unable to play mix:", err);
-        setError("Playback failed. Sync Google Drive in /admin/mixes.");
+        setError(
+          "Playback failed. Confirm the Drive folder is shared as Anyone with the link, then sync again in /admin/mixes.",
+        );
       }
     },
     [recordPlay],

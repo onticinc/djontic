@@ -31,11 +31,19 @@ export function isDriveConfigured() {
   return Boolean(getGoogleDriveApiKey() && getDriveFolderId());
 }
 
+export type DriveMixFile = {
+  id: string;
+  name: string;
+  pathDisplay: string;
+  resourceKey: string | null;
+};
+
 type DriveFile = {
   id: string;
   name: string;
   mimeType?: string;
   size?: string;
+  resourceKey?: string;
 };
 
 const SHARE_HINT =
@@ -77,13 +85,13 @@ export async function listMixFilesFromDrive(folderId = getDriveFolderId()) {
 
   await assertFolderAccessible(folderId, key);
 
-  const files: Array<{ id: string; name: string; pathDisplay: string }> = [];
+  const files: DriveMixFile[] = [];
   let pageToken: string | undefined;
 
   do {
     const params = new URLSearchParams({
       q: `'${folderId}' in parents and trashed=false`,
-      fields: "nextPageToken,files(id,name,mimeType,size)",
+      fields: "nextPageToken,files(id,name,mimeType,size,resourceKey)",
       pageSize: "100",
       key,
       supportsAllDrives: "true",
@@ -114,6 +122,7 @@ export async function listMixFilesFromDrive(folderId = getDriveFolderId()) {
         id: file.id,
         name: file.name,
         pathDisplay: `/${file.name}`,
+        resourceKey: file.resourceKey || null,
       });
     }
 
@@ -133,6 +142,82 @@ export function getPublicDownloadUrl(fileId: string) {
   return `https://drive.usercontent.google.com/download?id=${encodeURIComponent(fileId)}&export=download&confirm=t`;
 }
 
+function getApiMediaUrl(fileId: string) {
+  const key = getGoogleDriveApiKey();
+  if (!key) {
+    throw new Error(
+      "GOOGLE_DRIVE_API_KEY is missing. Add a Drive-enabled Google API key to .env.",
+    );
+  }
+  const params = new URLSearchParams({
+    alt: "media",
+    key,
+    supportsAllDrives: "true",
+  });
+  // resourceKey must be sent via X-Goog-Drive-Resource-Keys only;
+  // the query parameter is rejected for alt=media.
+  return `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?${params.toString()}`;
+}
+
+function driveMediaHeaders(fileId: string, resourceKey?: string | null, range?: string) {
+  return {
+    Accept: "*/*",
+    ...(range ? { Range: range } : {}),
+    ...(resourceKey
+      ? { "X-Goog-Drive-Resource-Keys": `${fileId}/${resourceKey}` }
+      : {}),
+  };
+}
+
+async function fetchDriveMedia(
+  url: string,
+  fileId: string,
+  resourceKey?: string | null,
+  range?: string,
+) {
+  return fetch(url, {
+    headers: driveMediaHeaders(fileId, resourceKey, range),
+    redirect: "follow",
+  });
+}
+
+function isUnusableMediaResponse(response: Response, contentType: string) {
+  return (
+    (!response.ok && response.status !== 206) ||
+    contentType.includes("text/html") ||
+    contentType.includes("application/json")
+  );
+}
+
+const resourceKeyCache = new Map<string, string | null>();
+let resourceKeyCacheLoadedAt = 0;
+const RESOURCE_KEY_CACHE_TTL_MS = 10 * 60 * 1000;
+
+async function resolveResourceKey(
+  fileId: string,
+  known: string | null | undefined,
+): Promise<string | null> {
+  if (known) return known;
+  const cached = resourceKeyCache.get(fileId);
+  if (
+    cached !== undefined &&
+    Date.now() - resourceKeyCacheLoadedAt < RESOURCE_KEY_CACHE_TTL_MS
+  ) {
+    return cached;
+  }
+  try {
+    const files = await listMixFilesFromDrive();
+    resourceKeyCache.clear();
+    for (const file of files) {
+      resourceKeyCache.set(file.id, file.resourceKey);
+    }
+    resourceKeyCacheLoadedAt = Date.now();
+    return resourceKeyCache.get(fileId) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function openMixContent(mix: MixRecord, range?: string) {
   const fileId = mix.driveId;
   if (!fileId) {
@@ -141,26 +226,45 @@ export async function openMixContent(mix: MixRecord, range?: string) {
     );
   }
 
-  // Public download endpoint (API keys cannot use alt=media).
-  // Use a browser UA — Drive returns a sign-in HTML page for custom agents.
-  const response = await fetch(getPublicDownloadUrl(fileId), {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-      Accept: "*/*",
-      ...(range ? { Range: range } : {}),
-    },
-    redirect: "follow",
-  });
+  let resourceKey = mix.resourceKey ?? null;
 
-  const contentType = response.headers.get("content-type") || "";
-  if (
-    (!response.ok && response.status !== 206) ||
-    contentType.includes("text/html")
-  ) {
+  // Prefer Drive API alt=media (works for publicly shared files with an API key).
+  // Legacy security-update files require resourceKey or they 404.
+  let response = await fetchDriveMedia(
+    getApiMediaUrl(fileId),
+    fileId,
+    resourceKey,
+    range,
+  );
+  let contentType = response.headers.get("content-type") || "";
+
+  if (isUnusableMediaResponse(response, contentType) && !resourceKey) {
+    resourceKey = await resolveResourceKey(fileId, null);
+    if (resourceKey) {
+      response = await fetchDriveMedia(
+        getApiMediaUrl(fileId),
+        fileId,
+        resourceKey,
+        range,
+      );
+      contentType = response.headers.get("content-type") || "";
+    }
+  }
+
+  if (isUnusableMediaResponse(response, contentType)) {
+    response = await fetchDriveMedia(
+      getPublicDownloadUrl(fileId),
+      fileId,
+      resourceKey,
+      range,
+    );
+    contentType = response.headers.get("content-type") || "";
+  }
+
+  if (isUnusableMediaResponse(response, contentType)) {
     const text = await response.text();
     throw new Error(
-      `Google Drive media fetch failed (${response.status}): ${text.slice(0, 200)}`,
+      `Google Drive media fetch failed (${response.status}): ${text.slice(0, 200)}. ${SHARE_HINT}`,
     );
   }
 

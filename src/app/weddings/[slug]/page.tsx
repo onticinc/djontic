@@ -33,7 +33,7 @@ export default async function WeddingRecapPage({ params }: PageProps) {
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
       <Link
         href="/weddings"
-        className="text-xs uppercase tracking-[0.16em] text-zinc-500 underline-offset-4 hover:text-white hover:underline"
+        className="text-xs uppercase tracking-[0.16em] text-muted-2 underline-offset-4 hover:text-foreground hover:underline"
       >
         Back to weddings
       </Link>

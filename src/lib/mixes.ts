@@ -29,6 +29,7 @@ function docToMixRecord(doc: {
   filename: string;
   title: string;
   driveId: string | null;
+  resourceKey?: string | null;
   path: string;
   visible: boolean;
   order: number;
@@ -40,6 +41,7 @@ function docToMixRecord(doc: {
     filename: doc.filename,
     title: doc.title,
     driveId: doc.driveId,
+    resourceKey: doc.resourceKey ?? null,
     path: doc.path,
     visible: doc.visible,
     order: doc.order,
@@ -86,6 +88,7 @@ export async function writeMixesStore(
         filename: mix.filename,
         title: mix.title,
         driveId: mix.driveId,
+        resourceKey: mix.resourceKey,
         path: mix.path,
         visible: mix.visible,
         order: mix.order,
@@ -118,7 +121,7 @@ export async function getFeaturedMixes(): Promise<{
         filename: mix.filename,
         shareUrl: store.folderUrl,
         pageUrl: `/mix/${encodeURIComponent(mix.id)}`,
-        streamUrl: `/api/mixes/${encodeURIComponent(mix.id)}/stream?v=2`,
+        streamUrl: `/api/mixes/${encodeURIComponent(mix.id)}/stream?v=3`,
         downloadUrl: `/api/mixes/${encodeURIComponent(mix.id)}/download`,
         artworkUrl: artworkUrlFor(mix),
         peaksUrl: `/api/mixes/${encodeURIComponent(mix.id)}/peaks?v=3`,
@@ -145,7 +148,12 @@ export async function getMixById(id: string): Promise<{
 
 export function mergeSyncedFiles(
   existing: MixRecord[],
-  files: Array<{ id: string; name: string; pathDisplay: string }>,
+  files: Array<{
+    id: string;
+    name: string;
+    pathDisplay: string;
+    resourceKey?: string | null;
+  }>,
   ignored: { driveIds?: string[]; filenames?: string[] } = {},
 ): MixRecord[] {
   const remaining = [...existing];
@@ -167,12 +175,14 @@ export function mergeSyncedFiles(
     const current =
       takeMatch((mix) => mix.filename === file.name) ??
       takeMatch((mix) => Boolean(mix.driveId) && mix.driveId === file.id);
+    const resourceKey = file.resourceKey ?? null;
 
     if (current) {
       if (current.id) usedIds.add(current.id);
       next.push({
         ...current,
         driveId: file.id,
+        resourceKey,
         path: file.pathDisplay,
         filename: file.name,
       });
@@ -188,6 +198,7 @@ export function mergeSyncedFiles(
       filename: file.name,
       title: filenameToTitle(file.name),
       driveId: file.id,
+      resourceKey,
       path: file.pathDisplay,
       visible: false,
       order: existing.length + next.length,

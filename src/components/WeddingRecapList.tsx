@@ -5,14 +5,14 @@ import type { PublicWeddingPost } from "@/lib/wedding-types";
 export function WeddingRecapList({ posts }: { posts: PublicWeddingPost[] }) {
   if (posts.length === 0) {
     return (
-      <p className="border-t border-white/10 py-10 text-zinc-400">
+      <p className="border-t border-border py-10 text-muted">
         Wedding recaps will appear here soon.
       </p>
     );
   }
 
   return (
-    <ul className="divide-y divide-white/10 border-t border-white/10">
+    <ul className="divide-y divide-border border-t border-border">
       {posts.map((post) => {
         const place = [post.city, post.state].filter(Boolean).join(", ");
         return (
@@ -20,7 +20,7 @@ export function WeddingRecapList({ posts }: { posts: PublicWeddingPost[] }) {
             <Link href={`/weddings/${post.slug}`} className="group block">
               <div className="grid gap-6 md:grid-cols-[240px_1fr] md:items-start">
                 {post.coverUrl ? (
-                  <div className="relative aspect-[4/3] overflow-hidden border border-white/10 bg-zinc-900">
+                  <div className="relative aspect-[4/3] overflow-hidden border border-border bg-surface">
                     <Image
                       src={post.coverUrl}
                       alt=""
@@ -30,26 +30,26 @@ export function WeddingRecapList({ posts }: { posts: PublicWeddingPost[] }) {
                     />
                   </div>
                 ) : (
-                  <div className="aspect-[4/3] border border-white/10 bg-zinc-900" />
+                  <div className="aspect-[4/3] border border-border bg-surface" />
                 )}
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-steel">
                     {post.dateLabel}
                   </p>
-                  <h3 className="mt-2 font-display text-3xl tracking-[0.06em] text-white transition group-hover:text-steel sm:text-4xl">
+                  <h3 className="mt-2 font-display text-3xl tracking-[0.06em] text-foreground transition group-hover:text-steel sm:text-4xl">
                     {post.title}
                   </h3>
                   {(post.location || place) && (
-                    <p className="mt-2 text-sm text-zinc-400">
+                    <p className="mt-2 text-sm text-muted">
                       {[post.location, place].filter(Boolean).join(" · ")}
                     </p>
                   )}
                   {post.excerpt ? (
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-500">
+                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-2">
                       {post.excerpt}
                     </p>
                   ) : null}
-                  <p className="mt-4 text-xs uppercase tracking-[0.16em] text-white underline-offset-4 group-hover:underline">
+                  <p className="mt-4 text-xs uppercase tracking-[0.16em] text-foreground underline-offset-4 group-hover:underline">
                     Read recap
                   </p>
                 </div>

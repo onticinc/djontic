@@ -29,9 +29,9 @@ export function NowPlayingBar() {
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
-      <div className="pointer-events-auto border-t border-white/10 bg-black/95 backdrop-blur-md">
+      <div className="pointer-events-auto border-t border-border bg-overlay backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
-          <div className="relative h-11 w-11 shrink-0 overflow-hidden bg-zinc-900 sm:h-12 sm:w-12">
+          <div className="relative h-11 w-11 shrink-0 overflow-hidden bg-surface sm:h-12 sm:w-12">
             <Image
               src={activeMix.artworkUrl || "/images/default-cover-art.png"}
               alt=""
@@ -49,21 +49,21 @@ export function NowPlayingBar() {
                 onClick={() =>
                   void (playing ? pause() : playMix(activeMix))
                 }
-                className="inline-flex h-9 min-w-9 items-center justify-center bg-white px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-steel"
+                className="inline-flex h-9 min-w-9 items-center justify-center bg-foreground px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-background transition hover:opacity-80"
                 aria-label={playing ? `Pause ${activeMix.title}` : `Play ${activeMix.title}`}
               >
                 {playing ? "Pause" : "Play"}
               </button>
               <Link
                 href={activeMix.pageUrl}
-                className="min-w-0 truncate font-display text-lg tracking-[0.06em] text-white hover:text-steel"
+                className="min-w-0 truncate font-display text-lg tracking-[0.06em] text-foreground hover:text-steel"
               >
                 {activeMix.title}
               </Link>
               <button
                 type="button"
                 onClick={clear}
-                className="ml-auto shrink-0 px-2 text-xs uppercase tracking-[0.14em] text-zinc-500 hover:text-white"
+                className="ml-auto shrink-0 px-2 text-xs uppercase tracking-[0.14em] text-muted-2 hover:text-foreground"
                 aria-label="Stop playback"
               >
                 Close
@@ -71,7 +71,7 @@ export function NowPlayingBar() {
             </div>
 
             <div className="mt-2 flex items-center gap-3">
-              <span className="w-10 shrink-0 text-[10px] tabular-nums text-zinc-500">
+              <span className="w-10 shrink-0 text-[10px] tabular-nums text-muted-2">
                 {formatTime(current)}
               </span>
               <input
@@ -85,10 +85,10 @@ export function NowPlayingBar() {
                 onChange={(event) => seek(Number(event.target.value))}
                 aria-label={`Seek ${activeMix.title}`}
                 style={{
-                  background: `linear-gradient(to right, #ffffff ${progress * 100}%, rgba(255,255,255,0.2) ${progress * 100}%)`,
+                  background: `linear-gradient(to right, var(--foreground) ${progress * 100}%, var(--track) ${progress * 100}%)`,
                 }}
               />
-              <span className="w-10 shrink-0 text-right text-[10px] tabular-nums text-zinc-500">
+              <span className="w-10 shrink-0 text-right text-[10px] tabular-nums text-muted-2">
                 {formatTime(duration)}
               </span>
             </div>

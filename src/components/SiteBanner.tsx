@@ -9,7 +9,7 @@ const LOCATIONS = [
 
 export function SiteBanner() {
   return (
-    <div className="bg-black">
+    <div className="bg-background">
       <p className="px-4 py-4 text-center text-xs uppercase tracking-[0.22em] text-steel sm:px-6 sm:py-5">
         {LOCATIONS.map((location, index) => (
           <span key={location.name}>
@@ -18,7 +18,7 @@ export function SiteBanner() {
               href={location.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="transition hover:text-white"
+              className="transition hover:text-foreground"
             >
               {location.name}
             </a>
@@ -26,7 +26,7 @@ export function SiteBanner() {
         ))}
       </p>
 
-      <div className="banner-reveal relative mx-auto aspect-[3.2/1] w-full max-w-7xl overflow-hidden bg-black sm:aspect-[3.8/1]">
+      <div className="banner-reveal relative mx-auto aspect-[3.2/1] w-full max-w-7xl overflow-hidden bg-surface sm:aspect-[3.8/1]">
         <Image
           src="/images/ontic-banner.png"
           alt="DJ Ontic"

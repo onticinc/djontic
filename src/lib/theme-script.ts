@@ -1,0 +1,1 @@
+export const themeInitScript = `(function(){try{var t=localStorage.getItem("djontic-theme");var m=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";var next=t==="light"||t==="dark"?t:m;var r=document.documentElement;r.classList.remove("light","dark");r.classList.add(next);}catch(e){document.documentElement.classList.add("dark");}})();`;

@@ -7,6 +7,7 @@ const mixValidator = v.object({
   filename: v.string(),
   title: v.string(),
   driveId: v.union(v.string(), v.null()),
+  resourceKey: v.optional(v.union(v.string(), v.null())),
   path: v.string(),
   visible: v.boolean(),
   order: v.number(),

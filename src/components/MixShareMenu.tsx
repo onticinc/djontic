@@ -80,7 +80,7 @@ export function MixShareMenu({ title, sharePath }: MixShareMenuProps) {
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex h-11 items-center justify-center border border-white/25 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-200 transition hover:border-white hover:text-white"
+        className="inline-flex h-11 items-center justify-center border border-border-strong px-4 text-xs font-semibold uppercase tracking-[0.16em] text-foreground transition hover:border-foreground"
       >
         Share
       </button>
@@ -88,14 +88,14 @@ export function MixShareMenu({ title, sharePath }: MixShareMenuProps) {
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 z-30 mt-2 min-w-48 border border-white/15 bg-black/95 p-2 shadow-xl"
+          className="absolute right-0 z-30 mt-2 min-w-48 border border-border bg-overlay p-2 shadow-xl"
         >
           {canNativeShare ? (
             <button
               type="button"
               role="menuitem"
               onClick={() => void shareNative()}
-              className="block w-full px-3 py-2 text-left text-xs uppercase tracking-[0.14em] text-zinc-300 hover:bg-white/5 hover:text-white"
+              className="block w-full px-3 py-2 text-left text-xs uppercase tracking-[0.14em] text-muted hover:bg-surface hover:text-foreground"
             >
               Share via…
             </button>
@@ -105,7 +105,7 @@ export function MixShareMenu({ title, sharePath }: MixShareMenuProps) {
             href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="block px-3 py-2 text-xs uppercase tracking-[0.14em] text-zinc-300 hover:bg-white/5 hover:text-white"
+            className="block px-3 py-2 text-xs uppercase tracking-[0.14em] text-muted hover:bg-surface hover:text-foreground"
             onClick={() => setOpen(false)}
           >
             X / Twitter
@@ -115,7 +115,7 @@ export function MixShareMenu({ title, sharePath }: MixShareMenuProps) {
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="block px-3 py-2 text-xs uppercase tracking-[0.14em] text-zinc-300 hover:bg-white/5 hover:text-white"
+            className="block px-3 py-2 text-xs uppercase tracking-[0.14em] text-muted hover:bg-surface hover:text-foreground"
             onClick={() => setOpen(false)}
           >
             Facebook
@@ -124,7 +124,7 @@ export function MixShareMenu({ title, sharePath }: MixShareMenuProps) {
             type="button"
             role="menuitem"
             onClick={() => void copyLink()}
-            className="block w-full px-3 py-2 text-left text-xs uppercase tracking-[0.14em] text-zinc-300 hover:bg-white/5 hover:text-white"
+            className="block w-full px-3 py-2 text-left text-xs uppercase tracking-[0.14em] text-muted hover:bg-surface hover:text-foreground"
           >
             {copied ? "Copied" : "Copy link"}
           </button>

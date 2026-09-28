@@ -55,7 +55,7 @@ function groupEventsByYearAndMonth(events: PublicEvent[]): EventYearGroup[] {
 export function EventList({ events }: { events: PublicEvent[] }) {
   if (events.length === 0) {
     return (
-      <p className="border-t border-white/10 py-10 text-zinc-400">
+      <p className="border-t border-border py-10 text-muted">
         No upcoming events posted yet. Check back soon.
       </p>
     );
@@ -65,11 +65,11 @@ export function EventList({ events }: { events: PublicEvent[] }) {
   const showYearBreaks = years.length > 1;
 
   return (
-    <div className="bg-[#050505]">
+    <div className="bg-background">
       {years.map((yearGroup, yearIndex) => (
         <div key={yearGroup.year}>
           {showYearBreaks && yearIndex > 0 ? (
-            <p className="mt-10 mb-6 text-center font-display text-xl tracking-[0.16em] text-white sm:text-2xl">
+            <p className="mt-10 mb-6 text-center font-display text-xl tracking-[0.16em] text-foreground sm:text-2xl">
               - {yearGroup.year} -
             </p>
           ) : null}
@@ -84,10 +84,10 @@ export function EventList({ events }: { events: PublicEvent[] }) {
                 className={
                   isFirstAfterYearBreak
                     ? undefined
-                    : "mt-10 border-t border-white/10 pt-8"
+                    : "mt-10 border-t border-border pt-8"
                 }
               >
-                <h2 className="font-display text-2xl tracking-[0.12em] text-zinc-500 sm:text-3xl">
+                <h2 className="font-display text-2xl tracking-[0.12em] text-muted-2 sm:text-3xl">
                   {group.label}
                 </h2>
                 <ul>
@@ -97,16 +97,16 @@ export function EventList({ events }: { events: PublicEvent[] }) {
                       className={
                         eventIndex === 0
                           ? "pt-6 pb-8"
-                          : "border-t border-white/10 py-8"
+                          : "border-t border-border py-8"
                       }
                     >
                       <p className="text-xs uppercase tracking-[0.2em] text-steel">
                         {event.dateLabel}
                       </p>
-                      <h3 className="mt-2 font-display text-3xl tracking-[0.06em] text-white sm:text-4xl">
+                      <h3 className="mt-2 font-display text-3xl tracking-[0.06em] text-foreground sm:text-4xl">
                         {event.name}
                       </h3>
-                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-400">
+                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
                         <p>{event.location}</p>
                         <p>
                           {event.city}, {event.state}

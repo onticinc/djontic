@@ -16,6 +16,7 @@ function docToMix(doc: {
   filename: string;
   title: string;
   driveId: string | null;
+  resourceKey?: string | null;
   path: string;
   visible: boolean;
   order: number;
@@ -27,6 +28,7 @@ function docToMix(doc: {
     filename: doc.filename,
     title: doc.title,
     driveId: doc.driveId,
+    resourceKey: doc.resourceKey ?? null,
     path: doc.path,
     visible: doc.visible,
     order: doc.order,
@@ -124,6 +126,7 @@ function MixesAdminPanel() {
           filename: mix.filename,
           title: mix.title,
           driveId: mix.driveId,
+          resourceKey: mix.resourceKey,
           path: mix.path,
           visible: mix.visible,
           order: mix.order,

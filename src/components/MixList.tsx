@@ -54,10 +54,10 @@ export function MixList({
       {groups.map((group) => (
         <section
           key={group.key}
-          className="mesh-panel border border-white/10 bg-[#080808] px-4 py-2 sm:px-8 sm:py-4"
+          className="mesh-panel border border-border bg-panel px-4 py-2 sm:px-8 sm:py-4"
         >
           {showHeadings ? (
-            <h2 className="mb-5 font-display text-3xl tracking-[0.08em] text-white sm:text-4xl">
+            <h2 className="mb-5 font-display text-3xl tracking-[0.08em] text-foreground sm:text-4xl">
               {group.label ?? "Uncategorized"}
             </h2>
           ) : null}

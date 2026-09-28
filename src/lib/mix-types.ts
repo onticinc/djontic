@@ -3,6 +3,8 @@ export type MixRecord = {
   filename: string;
   title: string;
   driveId: string | null;
+  /** Drive resource key for legacy security-update files. */
+  resourceKey: string | null;
   path: string;
   visible: boolean;
   order: number;
@@ -181,6 +183,10 @@ export function normalizeMixRecord(raw: Record<string, unknown>): MixRecord {
       (typeof raw.driveId === "string" && raw.driveId) ||
       (typeof raw.dropboxId === "string" && raw.dropboxId) ||
       null,
+    resourceKey:
+      typeof raw.resourceKey === "string" && raw.resourceKey
+        ? raw.resourceKey
+        : null,
     path: String(raw.path ?? `/${filename}`),
     visible: Boolean(raw.visible),
     order: typeof raw.order === "number" ? raw.order : 0,

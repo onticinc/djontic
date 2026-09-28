@@ -53,10 +53,10 @@ export default async function MixPage({ params }: Props) {
         <p className="text-xs uppercase tracking-[0.22em] text-steel">
           DJ Ontic Mix
         </p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.02em] text-white sm:text-5xl">
+        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.02em] text-foreground sm:text-5xl">
           {mix.title}
         </h1>
-        <p className="mt-4 text-base leading-relaxed text-zinc-400">
+        <p className="mt-4 text-base leading-relaxed text-muted">
           Share this mix or press play below.
         </p>
       </div>
@@ -65,8 +65,8 @@ export default async function MixPage({ params }: Props) {
         <MixList mixes={[mix]} />
       </div>
 
-      <p className="mt-8 text-sm text-zinc-500">
-        <a href="/" className="text-zinc-300 underline-offset-4 hover:underline">
+      <p className="mt-8 text-sm text-muted-2">
+        <a href="/" className="text-muted underline-offset-4 hover:text-foreground hover:underline">
           ← All featured mixes
         </a>
       </p>

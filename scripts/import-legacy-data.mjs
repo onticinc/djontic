@@ -30,6 +30,7 @@ const args = {
       filename: mix.filename,
       title: mix.title,
       driveId: mix.driveId ?? null,
+      resourceKey: mix.resourceKey ?? null,
       path: mix.path || `/${mix.filename}`,
       visible: Boolean(mix.visible),
       order: typeof mix.order === "number" ? mix.order : 0,

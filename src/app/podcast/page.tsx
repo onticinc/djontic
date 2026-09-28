@@ -24,15 +24,15 @@ export default async function PodcastPage() {
 
       <div className="mt-12">
         {!configured ? (
-          <p className="border-t border-white/10 py-10 text-zinc-400">
+          <p className="border-t border-border py-10 text-muted">
             Connect YouTube by adding{" "}
-            <code className="text-zinc-200">GOOGLE_API_KEY</code> (or{" "}
-            <code className="text-zinc-200">YOUTUBE_API_KEY</code>) and{" "}
-            <code className="text-zinc-200">YOUTUBE_EGGS_PLAYLIST_ID</code> to
-            your <code className="text-zinc-200">.env</code> file.
+            <code className="text-foreground">GOOGLE_API_KEY</code> (or{" "}
+            <code className="text-foreground">YOUTUBE_API_KEY</code>) and{" "}
+            <code className="text-foreground">YOUTUBE_EGGS_PLAYLIST_ID</code> to
+            your <code className="text-foreground">.env</code> file.
           </p>
         ) : error ? (
-          <p className="border-t border-white/10 py-10 text-zinc-400">
+          <p className="border-t border-border py-10 text-muted">
             Couldn’t load the playlist: {error}
           </p>
         ) : (

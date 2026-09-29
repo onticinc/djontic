@@ -53,7 +53,7 @@
   --color-header: var(--header);
   --color-overlay: var(--overlay);
   --font-sans: var(--font-archivo);
-  --font-display: var(--font-bebas);
+  --font-display: var(--font-archivo);
 }
 
 * {
@@ -73,8 +73,8 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-bebas), Impact, sans-serif;
-  font-weight: 400;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 500;
 }
 
 .mesh-panel {

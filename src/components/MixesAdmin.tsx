@@ -19,6 +19,7 @@ function docToMix(doc: {
   resourceKey?: string | null;
   path: string;
   visible: boolean;
+  featured?: boolean;
   order: number;
   coverUrl: string | null;
   category: string | null;
@@ -31,6 +32,7 @@ function docToMix(doc: {
     resourceKey: doc.resourceKey ?? null,
     path: doc.path,
     visible: doc.visible,
+    featured: Boolean(doc.featured),
     order: doc.order,
     coverUrl: doc.coverUrl,
     category: doc.category,
@@ -129,6 +131,7 @@ function MixesAdminPanel() {
           resourceKey: mix.resourceKey,
           path: mix.path,
           visible: mix.visible,
+          featured: mix.featured,
           order: mix.order,
           coverUrl: mix.coverUrl,
           category: mix.category,
@@ -177,14 +180,16 @@ function MixesAdminPanel() {
   }
 
   function updateMix(id: string, patch: Partial<MixRecord>) {
-    if (!store) return;
-    const nextMixes = store.mixes.map((mix) =>
-      mix.id === id ? { ...mix, ...patch } : mix,
-    );
-    setStore({
-      ...store,
-      mixes: nextMixes,
-      categoryOrder: syncCategoryOrder(nextMixes, store.categoryOrder),
+    setStore((prev) => {
+      if (!prev) return prev;
+      const nextMixes = prev.mixes.map((mix) =>
+        mix.id === id ? { ...mix, ...patch } : mix,
+      );
+      return {
+        ...prev,
+        mixes: nextMixes,
+        categoryOrder: syncCategoryOrder(nextMixes, prev.categoryOrder),
+      };
     });
   }
 
@@ -511,7 +516,7 @@ function MixesAdminPanel() {
               </div>
 
               <div
-                className="flex flex-col items-start gap-3 md:items-end"
+                className="flex flex-col items-start gap-3"
                 onMouseDown={(event) => event.stopPropagation()}
               >
                 <label className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-zinc-400">
@@ -524,6 +529,17 @@ function MixesAdminPanel() {
                     className="size-4 accent-white"
                   />
                   Visible
+                </label>
+                <label className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-zinc-400">
+                  <input
+                    type="checkbox"
+                    checked={mix.featured}
+                    onChange={(event) =>
+                      updateMix(mix.id, { featured: event.target.checked })
+                    }
+                    className="size-4 accent-white"
+                  />
+                  Featured
                 </label>
                 <button
                   type="button"

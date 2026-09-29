@@ -22,6 +22,10 @@ export async function getPublishedWeddingPosts(): Promise<PublicWeddingPost[]> {
   return await fetchQuery(api.weddings.listPublished, {});
 }
 
+export async function getWeddingPageSettings() {
+  return await fetchQuery(api.weddings.getPageSettings, {});
+}
+
 export async function getWeddingPostBySlug(
   slug: string,
 ): Promise<PublicWeddingPost | null> {

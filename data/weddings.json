@@ -1,4 +1,217 @@
 {
-  "updatedAt": "2026-09-26T17:00:00.000Z",
-  "posts": []
+  "updatedAt": "2026-09-29T01:42:51.792Z",
+  "posts": [
+    {
+      "slug": "2023-wedding-season-june-july",
+      "title": "2023 Wedding Season June & July",
+      "date": "2023-07-23",
+      "location": "",
+      "city": "Chelan",
+      "state": "WA",
+      "excerpt": "Highlights from the 2023 wedding season — June and July.",
+      "bodyHtml": "<p>A look back at the 2023 wedding season across June and July.</p>",
+      "coverUrl": "https://img.youtube.com/vi/13WTsfu31_c/hqdefault.jpg",
+      "photos": [],
+      "videos": [
+        {
+          "id": "82210a79-ecd0-4c76-8208-bb9a88985047",
+          "url": "https://www.youtube.com/watch?v=13WTsfu31_c",
+          "provider": "youtube"
+        }
+      ],
+      "published": true,
+      "photographerName": "",
+      "photographerUrl": null
+    },
+    {
+      "slug": "sam-david-wedding",
+      "title": "Sam + David Wedding",
+      "date": "2023-01-17",
+      "location": "WithinSodo",
+      "city": "Seattle",
+      "state": "WA",
+      "excerpt": "Photos by juliakinnunenphotography.com at WithinSodo.",
+      "bodyHtml": "<p>Photos by <a href=\"https://juliakinnunenphotography.com\" target=\"_blank\" rel=\"noopener noreferrer\">Julia Kinnunen Photography</a>.</p><p>Venue: WithinSodo.</p>",
+      "coverUrl": "/weddings/sam-david-wedding/Screen-Shot-2023-01-17-at-12.04.11-AM.png",
+      "photos": [
+        {
+          "id": "d235d212-ce28-4af0-a803-68feae601319",
+          "url": "/weddings/sam-david-wedding/Screen-Shot-2023-01-17-at-12.04.11-AM.png",
+          "alt": "Sam + David Wedding photo 1"
+        },
+        {
+          "id": "b6d48232-dad3-4067-82fb-94af70f5f275",
+          "url": "/weddings/sam-david-wedding/Screen-Shot-2023-01-17-at-12.03.48-AM.png",
+          "alt": "Sam + David Wedding photo 2"
+        },
+        {
+          "id": "b9401926-26b8-4d71-ad2b-eb14d6d21a41",
+          "url": "/weddings/sam-david-wedding/Screen-Shot-2023-01-17-at-12.03.33-AM.png",
+          "alt": "Sam + David Wedding photo 3"
+        },
+        {
+          "id": "1777ee62-9cd7-4aa1-9cc4-2dd22618c956",
+          "url": "/weddings/sam-david-wedding/Screen-Shot-2023-01-17-at-12.03.14-AM.png",
+          "alt": "Sam + David Wedding photo 4"
+        },
+        {
+          "id": "d5b48c7d-4994-40a3-988b-93af5a75655b",
+          "url": "/weddings/sam-david-wedding/Screen-Shot-2023-01-17-at-12.03.02-AM.png",
+          "alt": "Sam + David Wedding photo 5"
+        },
+        {
+          "id": "718627a8-6460-420a-b990-829cd48a7e70",
+          "url": "/weddings/sam-david-wedding/Screen-Shot-2023-01-17-at-12.02.27-AM.png",
+          "alt": "Sam + David Wedding photo 6"
+        }
+      ],
+      "videos": [],
+      "published": true,
+      "photographerName": "Julia Kinnunen Photography",
+      "photographerUrl": "https://juliakinnunenphotography.com"
+    },
+    {
+      "slug": "helle-russell-wedding",
+      "title": "Helle & Russell Wedding",
+      "date": "2023-01-16",
+      "location": "Larc Hill Vineyard",
+      "city": "",
+      "state": "WA",
+      "excerpt": "Photos by Nicole Connor. Planner: True Expressions Wedding Planner.",
+      "bodyHtml": "<p>Photos by Nicole Connor.</p><p>Venue: Larc Hill Vineyard.</p><p>Planner: True Expressions Wedding Planner.</p>",
+      "coverUrl": "/weddings/helle-russell-wedding/Screen-Shot-2023-01-16-at-11.46.24-PM.png",
+      "photos": [
+        {
+          "id": "5644553f-2a96-48f1-a6be-36756d1e92c3",
+          "url": "/weddings/helle-russell-wedding/Screen-Shot-2023-01-16-at-11.46.24-PM.png",
+          "alt": "Helle & Russell Wedding photo 1"
+        },
+        {
+          "id": "9d241eff-4210-411c-a615-bd59103470e7",
+          "url": "/weddings/helle-russell-wedding/Screen-Shot-2023-01-16-at-11.47.01-PM.png",
+          "alt": "Helle & Russell Wedding photo 2"
+        },
+        {
+          "id": "c3a6cc38-c452-4333-9788-f89d3ac04528",
+          "url": "/weddings/helle-russell-wedding/Screen-Shot-2023-01-16-at-11.47.46-PM.png",
+          "alt": "Helle & Russell Wedding photo 3"
+        },
+        {
+          "id": "e7a15e67-37fa-4ec3-9fad-635d7c483174",
+          "url": "/weddings/helle-russell-wedding/Screen-Shot-2023-01-16-at-11.48.26-PM.png",
+          "alt": "Helle & Russell Wedding photo 4"
+        },
+        {
+          "id": "3cfad6f9-d782-4075-bac8-913f4ae49d84",
+          "url": "/weddings/helle-russell-wedding/Screen-Shot-2023-01-16-at-11.53.05-PM.png",
+          "alt": "Helle & Russell Wedding photo 5"
+        },
+        {
+          "id": "6ec3f3b1-6621-433f-9ffe-6077e19f59c2",
+          "url": "/weddings/helle-russell-wedding/Screen-Shot-2023-01-16-at-11.52.17-PM.png",
+          "alt": "Helle & Russell Wedding photo 6"
+        }
+      ],
+      "videos": [],
+      "published": true,
+      "photographerName": "Nicole Connor",
+      "photographerUrl": null
+    },
+    {
+      "slug": "siren-songs-winery",
+      "title": "Siren Songs Winery",
+      "date": "2023-01-16",
+      "location": "Siren Songs Winery",
+      "city": "Chelan",
+      "state": "WA",
+      "excerpt": "Photos by Kamio Lavarria. Dinner music by Scott Foster.",
+      "bodyHtml": "<p>Photos by Kamio Lavarria.</p><p>Venue: Siren Songs Winery, Chelan.</p><p>Dinner music: Scott Foster.</p>",
+      "coverUrl": "/weddings/siren-songs-winery/kamio_lavarria_Chelan-Siren-Song-Winery-Wedding-105.jpeg",
+      "photos": [
+        {
+          "id": "28607347-3376-47dd-ab71-29df433992ea",
+          "url": "/weddings/siren-songs-winery/kamio_lavarria_Chelan-Siren-Song-Winery-Wedding-105.jpeg",
+          "alt": "Siren Songs Winery photo 1"
+        },
+        {
+          "id": "567c698c-38f2-4c9b-87e8-aec3abc02aed",
+          "url": "/weddings/siren-songs-winery/kamio_lavarria_Chelan-Siren-Song-Winery-Wedding-145.jpeg",
+          "alt": "Siren Songs Winery photo 2"
+        },
+        {
+          "id": "51e6f126-f90b-4ca1-93b6-d2bb4dd649ee",
+          "url": "/weddings/siren-songs-winery/kamio_lavarria__01_Chelan-Siren-Song-Winery-Wedding-152.jpeg",
+          "alt": "Siren Songs Winery photo 3"
+        },
+        {
+          "id": "a8f79875-43ba-4378-9ea0-37006b81b363",
+          "url": "/weddings/siren-songs-winery/kamio_lavarria_Chelan-Siren-Song-Winery-Wedding-144.jpeg",
+          "alt": "Siren Songs Winery photo 4"
+        },
+        {
+          "id": "dd0b2adb-d94e-4c4e-9ad3-a7435a5229f9",
+          "url": "/weddings/siren-songs-winery/siren_songs.png",
+          "alt": "Siren Songs Winery photo 5"
+        }
+      ],
+      "videos": [],
+      "published": true,
+      "photographerName": "Kamio Lavarria",
+      "photographerUrl": null
+    },
+    {
+      "slug": "tsillan-cellars",
+      "title": "Tsillan Cellars",
+      "date": "2021-07-20",
+      "location": "Tsillan Cellars",
+      "city": "Chelan",
+      "state": "WA",
+      "excerpt": "Wedding photos from Tsillan Cellars in Chelan.",
+      "bodyHtml": "<p>Venue: Tsillan Cellars, Chelan, Washington.</p>",
+      "coverUrl": "/weddings/tsillan-cellars/Image-3.jpg",
+      "photos": [
+        {
+          "id": "cb04185d-c8c6-4e9e-bbce-45a93be022e3",
+          "url": "/weddings/tsillan-cellars/Image-3.jpg",
+          "alt": "Tsillan Cellars photo 1"
+        },
+        {
+          "id": "a69fdd59-994a-49d3-9676-2446ffa1968b",
+          "url": "/weddings/tsillan-cellars/Image-4.jpg",
+          "alt": "Tsillan Cellars photo 2"
+        },
+        {
+          "id": "47dcc51c-944a-4347-8262-8b03fb1636f7",
+          "url": "/weddings/tsillan-cellars/Image-5.jpg",
+          "alt": "Tsillan Cellars photo 3"
+        }
+      ],
+      "videos": [],
+      "published": true,
+      "photographerName": "",
+      "photographerUrl": null
+    },
+    {
+      "slug": "jessica-and-david-wedding",
+      "title": "Jessica and David Wedding",
+      "date": "2021-07-20",
+      "location": "Tsillan Cellars",
+      "city": "Chelan",
+      "state": "WA",
+      "excerpt": "Video by Grace Media Films at Tsillan Cellars.",
+      "bodyHtml": "<p>Venue: Tsillan Cellars, Chelan.</p><p>Video by Grace Media Films.</p>",
+      "coverUrl": null,
+      "photos": [],
+      "videos": [
+        {
+          "id": "6fcb14e9-033a-46ce-b306-24d75ae51b40",
+          "url": "https://vimeo.com/314523578",
+          "provider": "vimeo"
+        }
+      ],
+      "published": true,
+      "photographerName": "",
+      "photographerUrl": null
+    }
+  ]
 }

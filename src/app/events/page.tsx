@@ -17,7 +17,6 @@ export default async function EventsPage() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
       <PageHero
-        eyebrow="On the calendar"
         title="Upcoming Events"
         description="Destination parties, residencies, and weddings across the mountain west."
       />

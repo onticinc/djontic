@@ -32,6 +32,7 @@ function docToMixRecord(doc: {
   resourceKey?: string | null;
   path: string;
   visible: boolean;
+  featured?: boolean;
   order: number;
   coverUrl: string | null;
   category: string | null;
@@ -44,6 +45,7 @@ function docToMixRecord(doc: {
     resourceKey: doc.resourceKey ?? null,
     path: doc.path,
     visible: doc.visible,
+    featured: Boolean(doc.featured),
     order: doc.order,
     coverUrl: doc.coverUrl,
     category: doc.category,
@@ -91,6 +93,7 @@ export async function writeMixesStore(
         resourceKey: mix.resourceKey,
         path: mix.path,
         visible: mix.visible,
+        featured: mix.featured,
         order: mix.order,
         coverUrl: mix.coverUrl,
         category: mix.category,
@@ -127,6 +130,7 @@ export async function getFeaturedMixes(): Promise<{
         peaksUrl: `/api/mixes/${encodeURIComponent(mix.id)}/peaks?v=3`,
         playCount: playCounts[mix.id] ?? 0,
         category: mix.category,
+        featured: mix.featured,
       })),
   };
 }
@@ -201,6 +205,7 @@ export function mergeSyncedFiles(
       resourceKey,
       path: file.pathDisplay,
       visible: false,
+      featured: false,
       order: existing.length + next.length,
       coverUrl: null,
       category: null,

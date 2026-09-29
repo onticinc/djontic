@@ -10,7 +10,7 @@ export function PageHero({ eyebrow, title, description }: PageHeroProps) {
       {eyebrow ? (
         <p className="text-xs uppercase tracking-[0.22em] text-steel">{eyebrow}</p>
       ) : null}
-      <h1 className="mt-3 font-display text-5xl tracking-[0.08em] text-foreground sm:text-6xl">
+      <h1 className="mt-3 font-display text-3xl tracking-[0.06em] text-foreground sm:text-4xl">
         {title}
       </h1>
       {description ? (

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PhotographerCredit } from "@/components/PhotographerCredit";
 import type { PublicWeddingPost } from "@/lib/wedding-types";
 import { videoEmbedUrl } from "@/lib/wedding-types";
 import { sanitizeWeddingHtml } from "@/lib/sanitize-html";
@@ -6,100 +7,117 @@ import { sanitizeWeddingHtml } from "@/lib/sanitize-html";
 export function WeddingRecapDetail({ post }: { post: PublicWeddingPost }) {
   const place = [post.city, post.state].filter(Boolean).join(", ");
   const body = sanitizeWeddingHtml(post.bodyHtml);
+  const meta = [post.location, place].filter(Boolean).join(" · ");
+
+  const gallery = (() => {
+    const seen = new Set<string>();
+    const items: Array<{ id: string; url: string; alt: string }> = [];
+    for (const photo of post.photos) {
+      if (seen.has(photo.url)) continue;
+      seen.add(photo.url);
+      items.push(photo);
+    }
+    if (post.coverUrl && !seen.has(post.coverUrl) && items.length === 0) {
+      items.push({
+        id: "cover",
+        url: post.coverUrl,
+        alt: post.title,
+      });
+    }
+    return items;
+  })();
 
   return (
     <article>
-      <p className="text-xs uppercase tracking-[0.2em] text-steel">
-        {post.dateLabel}
-      </p>
-      <h1 className="mt-3 font-display text-5xl tracking-[0.08em] text-foreground sm:text-6xl">
-        {post.title}
-      </h1>
-      {(post.location || place) && (
-        <p className="mt-4 text-sm text-muted">
-          {[post.location, place].filter(Boolean).join(" · ")}
+      <header className="max-w-3xl">
+        <p className="text-xs uppercase tracking-[0.2em] text-steel">
+          {post.dateLabel}
         </p>
-      )}
+        <h1 className="mt-2 font-display text-3xl tracking-[0.06em] text-foreground sm:text-4xl">
+          {post.title}
+        </h1>
+        {meta ? <p className="mt-3 text-sm text-muted">{meta}</p> : null}
+      </header>
 
-      {post.coverUrl ? (
-        <div className="relative mt-10 aspect-[16/9] overflow-hidden border border-border bg-surface">
-          <Image
-            src={post.coverUrl}
-            alt=""
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 1152px) 100vw, 1152px"
-          />
-        </div>
-      ) : null}
-
-      {body ? (
-        <div
-          className="wedding-body mt-10 max-w-3xl text-base leading-relaxed text-muted [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 [&_blockquote]:border-l [&_blockquote]:border-border-strong [&_blockquote]:pl-4 [&_blockquote]:text-muted [&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-3xl [&_h2]:tracking-[0.08em] [&_h2]:text-foreground [&_h3]:mt-6 [&_h3]:font-display [&_h3]:text-2xl [&_h3]:tracking-[0.08em] [&_h3]:text-foreground [&_img]:my-6 [&_img]:max-h-[32rem] [&_img]:w-full [&_img]:object-contain [&_li]:ml-5 [&_ol]:my-4 [&_ol]:list-decimal [&_p]:mt-4 [&_ul]:my-4 [&_ul]:list-disc"
-          dangerouslySetInnerHTML={{ __html: body }}
-        />
-      ) : null}
-
-      {post.photos.length > 0 ? (
-        <section className="mt-16">
-          <h2 className="font-display text-3xl tracking-[0.08em] text-foreground">
-            Photos
-          </h2>
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-            {post.photos.map((photo) => (
-              <li
-                key={photo.id}
-                className="relative aspect-[4/3] overflow-hidden border border-border bg-surface"
-              >
-                <Image
-                  src={photo.url}
-                  alt={photo.alt || ""}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                />
-              </li>
-            ))}
-          </ul>
+      {post.videos.length > 0 ? (
+        <section className="mt-10 space-y-6">
+          {post.videos.map((video) => {
+            const embed = videoEmbedUrl(video);
+            return (
+              <div key={video.id}>
+                {embed ? (
+                  <div className="aspect-video overflow-hidden border border-border bg-surface">
+                    <iframe
+                      src={embed}
+                      title={`${post.title} video`}
+                      className="h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <a
+                    href={video.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-foreground underline underline-offset-4"
+                  >
+                    Watch video
+                  </a>
+                )}
+              </div>
+            );
+          })}
         </section>
       ) : null}
 
-      {post.videos.length > 0 ? (
-        <section className="mt-16">
-          <h2 className="font-display text-3xl tracking-[0.08em] text-foreground">
-            Videos
-          </h2>
-          <ul className="mt-6 space-y-8">
-            {post.videos.map((video) => {
-              const embed = videoEmbedUrl(video);
+      {gallery.length > 0 ? (
+        <section className="mt-10">
+          <ul
+            className={`grid gap-2 sm:gap-3 ${
+              gallery.length === 1
+                ? "grid-cols-1"
+                : gallery.length === 2
+                  ? "grid-cols-1 sm:grid-cols-2"
+                  : "grid-cols-2 lg:grid-cols-3"
+            }`}
+          >
+            {gallery.map((photo, index) => {
+              const featured = index === 0 && gallery.length >= 3;
               return (
-                <li key={video.id}>
-                  {embed ? (
-                    <div className="aspect-video overflow-hidden border border-border bg-surface">
-                      <iframe
-                        src={embed}
-                        title="Wedding video"
-                        className="h-full w-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  ) : (
-                    <a
-                      href={video.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-foreground underline underline-offset-4"
-                    >
-                      Watch video
-                    </a>
-                  )}
+                <li
+                  key={photo.id}
+                  className={`relative overflow-hidden border border-border bg-surface ${
+                    featured
+                      ? "aspect-[16/10] col-span-2 lg:col-span-2 lg:row-span-2 lg:aspect-auto lg:min-h-[28rem]"
+                      : "aspect-[4/3]"
+                  }`}
+                >
+                  <Image
+                    src={photo.url}
+                    alt={photo.alt || post.title}
+                    fill
+                    priority={index < 2}
+                    className="object-cover"
+                    sizes={
+                      featured
+                        ? "(max-width: 1024px) 100vw, 66vw"
+                        : "(max-width: 640px) 50vw, 33vw"
+                    }
+                  />
                 </li>
               );
             })}
           </ul>
+          <PhotographerCredit post={post} className="mt-4" />
         </section>
+      ) : null}
+
+      {body ? (
+        <div
+          className="wedding-body mt-10 max-w-2xl text-sm leading-relaxed text-muted [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 [&_p]:mt-3 [&_p:first-child]:mt-0"
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
       ) : null}
     </article>
   );

@@ -10,10 +10,16 @@ type MixGroup = {
 };
 
 function groupMixes(mixes: Mix[], categoryOrder: string[] = []): MixGroup[] {
+  const featured = mixes.filter((mix) => mix.featured);
+  const rest = mixes.filter((mix) => !mix.featured);
   const groups: MixGroup[] = [];
   const indexByKey = new Map<string, number>();
 
-  for (const mix of mixes) {
+  if (featured.length > 0) {
+    groups.push({ key: "featured", label: "Featured", mixes: featured });
+  }
+
+  for (const mix of rest) {
     const label = mix.category?.trim() || null;
     const key = label ? `cat:${label.toLowerCase()}` : "uncategorized";
     const existing = indexByKey.get(key);
@@ -29,14 +35,17 @@ function groupMixes(mixes: Mix[], categoryOrder: string[] = []): MixGroup[] {
     categoryOrder.map((name, index) => [name.toLowerCase(), index]),
   );
   const named = groups
-    .filter((group) => group.key !== "uncategorized")
+    .filter(
+      (group) => group.key !== "uncategorized" && group.key !== "featured",
+    )
     .sort((a, b) => {
       const aIndex = orderIndex.get((a.label ?? "").toLowerCase()) ?? 9999;
       const bIndex = orderIndex.get((b.label ?? "").toLowerCase()) ?? 9999;
       return aIndex - bIndex;
     });
+  const featuredGroup = groups.filter((group) => group.key === "featured");
   const uncategorized = groups.filter((group) => group.key === "uncategorized");
-  return [...named, ...uncategorized];
+  return [...featuredGroup, ...named, ...uncategorized];
 }
 
 export function MixList({
@@ -57,7 +66,7 @@ export function MixList({
           className="mesh-panel border border-border bg-panel px-4 py-2 sm:px-8 sm:py-4"
         >
           {showHeadings ? (
-            <h2 className="mb-5 font-display text-3xl tracking-[0.08em] text-foreground sm:text-4xl">
+            <h2 className="mb-5 font-display text-xl tracking-[0.06em] text-foreground sm:text-2xl">
               {group.label ?? "Uncategorized"}
             </h2>
           ) : null}

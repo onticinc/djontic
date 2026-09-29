@@ -28,7 +28,7 @@ export function PodcastGrid({ videos }: { videos: PodcastVideo[] }) {
             <p className="mt-3 text-xs uppercase tracking-[0.16em] text-muted-2">
               {video.publishedLabel}
             </p>
-            <h2 className="mt-1 font-display text-xl tracking-[0.04em] text-foreground transition group-hover:text-steel">
+            <h2 className="mt-1 font-display text-base tracking-[0.04em] text-foreground transition group-hover:text-steel">
               {video.title}
             </h2>
           </Link>

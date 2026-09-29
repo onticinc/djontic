@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-border bg-background">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="font-display text-2xl tracking-[0.18em] text-foreground">
+          <p className="font-display text-lg tracking-[0.14em] text-foreground">
             DJ ONTIC
           </p>
           <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">

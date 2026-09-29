@@ -48,7 +48,7 @@ function AdminDashboardPanel() {
               <p className="text-xs uppercase tracking-[0.18em] text-steel">
                 Manage
               </p>
-              <h2 className="mt-3 font-display text-3xl tracking-[0.08em] text-white">
+              <h2 className="mt-3 font-display text-xl tracking-[0.06em] text-white">
                 {section.label}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-zinc-400">

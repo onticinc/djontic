@@ -10,6 +10,7 @@ const mixValidator = v.object({
   resourceKey: v.optional(v.union(v.string(), v.null())),
   path: v.string(),
   visible: v.boolean(),
+  featured: v.optional(v.boolean()),
   order: v.number(),
   coverUrl: v.union(v.string(), v.null()),
   category: v.union(v.string(), v.null()),

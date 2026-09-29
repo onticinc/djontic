@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, Bebas_Neue } from "next/font/google";
+import { Archivo } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { AppShell } from "@/components/AppShell";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
@@ -9,13 +9,6 @@ import "./globals.css";
 
 const archivo = Archivo({
   variable: "--font-archivo",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const bebas = Bebas_Neue({
-  variable: "--font-bebas",
-  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -36,7 +29,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${bebas.variable} dark h-full antialiased`}
+      className={`${archivo.variable} dark h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

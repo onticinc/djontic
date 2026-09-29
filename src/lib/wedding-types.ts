@@ -21,6 +21,8 @@ export type WeddingPost = {
   excerpt: string;
   bodyHtml: string;
   coverUrl: string | null;
+  photographerName: string;
+  photographerUrl: string | null;
   photos: WeddingPhoto[];
   videos: WeddingVideo[];
   published: boolean;
@@ -44,6 +46,8 @@ export type PublicWeddingPost = {
   excerpt: string;
   bodyHtml: string;
   coverUrl: string | null;
+  photographerName: string;
+  photographerUrl: string | null;
   photos: WeddingPhoto[];
   videos: WeddingVideo[];
 };
@@ -210,6 +214,9 @@ export function normalizeWeddingPost(
     excerpt: typeof raw.excerpt === "string" ? raw.excerpt.trim() : "",
     bodyHtml: typeof raw.bodyHtml === "string" ? raw.bodyHtml : "",
     coverUrl: normalizeCoverUrl(raw.coverUrl),
+    photographerName:
+      typeof raw.photographerName === "string" ? raw.photographerName.trim() : "",
+    photographerUrl: normalizeCoverUrl(raw.photographerUrl),
     photos,
     videos,
     published: Boolean(raw.published),

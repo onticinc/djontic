@@ -30,6 +30,7 @@ export default defineSchema({
     resourceKey: v.optional(v.union(v.string(), v.null())),
     path: v.string(),
     visible: v.boolean(),
+    featured: v.optional(v.boolean()),
     order: v.number(),
     coverUrl: v.union(v.string(), v.null()),
     category: v.union(v.string(), v.null()),
@@ -62,6 +63,8 @@ export default defineSchema({
     excerpt: v.string(),
     bodyHtml: v.string(),
     coverUrl: v.union(v.string(), v.null()),
+    photographerName: v.optional(v.string()),
+    photographerUrl: v.optional(v.union(v.string(), v.null())),
     photos: v.array(weddingPhoto),
     videos: v.array(weddingVideo),
     published: v.boolean(),
@@ -69,6 +72,29 @@ export default defineSchema({
   })
     .index("by_slug", ["slug"])
     .index("by_date", ["date"]),
+
+  weddingPageSettings: defineTable({
+    singleton: v.literal("default"),
+    heroEyebrow: v.string(),
+    heroTitle: v.string(),
+    heroDescription: v.string(),
+    recapsTitle: v.string(),
+    recapsDescription: v.string(),
+    whereTitle: v.string(),
+    destinations: v.array(
+      v.object({
+        label: v.string(),
+        text: v.string(),
+      }),
+    ),
+    approachTitle: v.string(),
+    approachBody: v.string(),
+    bookingTitle: v.string(),
+    bookingDescription: v.string(),
+    bookingLabel: v.string(),
+    bookingUrl: v.string(),
+    updatedAt: v.string(),
+  }).index("by_singleton", ["singleton"]),
 
   playCounts: defineTable({
     mixKey: v.string(),

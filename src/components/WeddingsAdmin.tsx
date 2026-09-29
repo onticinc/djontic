@@ -30,6 +30,8 @@ function emptyPost(): WeddingPost {
     excerpt: "",
     bodyHtml: "",
     coverUrl: null,
+    photographerName: "",
+    photographerUrl: null,
     photos: [],
     videos: [],
     published: false,
@@ -37,13 +39,32 @@ function emptyPost(): WeddingPost {
   };
 }
 
+type PageSettingsDraft = {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroDescription: string;
+  recapsTitle: string;
+  recapsDescription: string;
+  whereTitle: string;
+  destinations: Array<{ label: string; text: string }>;
+  approachTitle: string;
+  approachBody: string;
+  bookingTitle: string;
+  bookingDescription: string;
+  bookingLabel: string;
+  bookingUrl: string;
+};
+
 function WeddingsAdminPanel() {
   const { signOut } = useAuthActions();
   const remotePosts = useQuery(api.weddings.listAll);
+  const remotePage = useQuery(api.weddings.getPageSettings);
   const saveWedding = useMutation(api.weddings.save);
   const removeWedding = useMutation(api.weddings.remove);
+  const savePageSettings = useMutation(api.weddings.savePageSettings);
 
   const [posts, setPosts] = useState<WeddingPost[]>([]);
+  const [pageDraft, setPageDraft] = useState<PageSettingsDraft | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<WeddingPost | null>(null);
   const [videoDraft, setVideoDraft] = useState("");
@@ -56,6 +77,56 @@ function WeddingsAdminPanel() {
     if (!remotePosts) return;
     setPosts(remotePosts);
   }, [remotePosts]);
+
+  useEffect(() => {
+    if (!remotePage) return;
+    setPageDraft({
+      heroEyebrow: remotePage.heroEyebrow,
+      heroTitle: remotePage.heroTitle,
+      heroDescription: remotePage.heroDescription,
+      recapsTitle: remotePage.recapsTitle,
+      recapsDescription: remotePage.recapsDescription,
+      whereTitle: remotePage.whereTitle,
+      destinations: remotePage.destinations.map((item) => ({ ...item })),
+      approachTitle: remotePage.approachTitle,
+      approachBody: remotePage.approachBody,
+      bookingTitle: remotePage.bookingTitle,
+      bookingDescription: remotePage.bookingDescription,
+      bookingLabel: remotePage.bookingLabel,
+      bookingUrl: remotePage.bookingUrl,
+    });
+  }, [remotePage]);
+
+  function updatePageDraft(patch: Partial<PageSettingsDraft>) {
+    setPageDraft((current) => (current ? { ...current, ...patch } : current));
+  }
+
+  function updateDestination(
+    index: number,
+    patch: Partial<{ label: string; text: string }>,
+  ) {
+    setPageDraft((current) => {
+      if (!current) return current;
+      const destinations = current.destinations.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, ...patch } : item,
+      );
+      return { ...current, destinations };
+    });
+  }
+
+  async function savePage() {
+    if (!pageDraft) return;
+    setBusy(true);
+    setStatus(null);
+    try {
+      await savePageSettings(pageDraft);
+      setStatus("Weddings page saved.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Save failed");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   function startCreate() {
     const post = emptyPost();
@@ -101,6 +172,8 @@ function WeddingsAdminPanel() {
       state: draft.state.trim(),
       excerpt: draft.excerpt.trim(),
       bodyHtml: sanitizeWeddingHtml(draft.bodyHtml),
+      photographerName: draft.photographerName.trim(),
+      photographerUrl: draft.photographerUrl?.trim() || null,
       updatedAt: new Date().toISOString(),
     };
 
@@ -119,6 +192,8 @@ function WeddingsAdminPanel() {
           excerpt: nextDraft.excerpt,
           bodyHtml: nextDraft.bodyHtml,
           coverUrl: nextDraft.coverUrl,
+          photographerName: nextDraft.photographerName,
+          photographerUrl: nextDraft.photographerUrl,
           photos: nextDraft.photos,
           videos: nextDraft.videos,
           published: nextDraft.published,
@@ -258,7 +333,7 @@ function WeddingsAdminPanel() {
     });
   }
 
-  if (remotePosts === undefined) {
+  if (remotePosts === undefined || remotePage === undefined || !pageDraft) {
     return <p className="text-sm text-zinc-500">Loading wedding recaps…</p>;
   }
 
@@ -383,6 +458,35 @@ function WeddingsAdminPanel() {
             className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
           />
         </label>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Photographer name
+            <input
+              type="text"
+              value={draft.photographerName}
+              onChange={(event) =>
+                updateDraft({ photographerName: event.target.value })
+              }
+              placeholder="Julia Kinnunen Photography"
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Photographer website
+            <input
+              type="url"
+              value={draft.photographerUrl ?? ""}
+              onChange={(event) =>
+                updateDraft({
+                  photographerUrl: event.target.value.trim() || null,
+                })
+              }
+              placeholder="https://…"
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+        </div>
 
         <div>
           <p className="text-xs uppercase tracking-[0.16em] text-zinc-500">
@@ -544,69 +648,296 @@ function WeddingsAdminPanel() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          disabled={busy}
-          onClick={startCreate}
-          className="inline-flex h-11 items-center bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-black disabled:opacity-50"
-        >
-          New recap
-        </button>
-        <button
-          type="button"
-          onClick={() => void signOut()}
-          className="inline-flex h-11 items-center px-3 text-xs uppercase tracking-[0.16em] text-zinc-500 hover:text-white"
-        >
-          Log out
-        </button>
+    <div className="space-y-10">
+      <div className="space-y-6 border border-white/10 bg-zinc-900 px-4 py-5 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-white">
+              Weddings page
+            </h2>
+            <p className="mt-1 text-xs text-zinc-500">
+              Edits the public /weddings layout copy. Published recaps fill the
+              top 4 and bottom 4 photo slots by date.
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void savePage()}
+            className="inline-flex h-11 items-center bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-black disabled:opacity-50"
+          >
+            Save page
+          </button>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Hero eyebrow
+            <input
+              type="text"
+              value={pageDraft.heroEyebrow}
+              onChange={(event) =>
+                updatePageDraft({ heroEyebrow: event.target.value })
+              }
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Hero title
+            <input
+              type="text"
+              value={pageDraft.heroTitle}
+              onChange={(event) =>
+                updatePageDraft({ heroTitle: event.target.value })
+              }
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+        </div>
+
+        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+          Hero description
+          <textarea
+            value={pageDraft.heroDescription}
+            onChange={(event) =>
+              updatePageDraft({ heroDescription: event.target.value })
+            }
+            rows={3}
+            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+          />
+        </label>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Recaps title
+            <input
+              type="text"
+              value={pageDraft.recapsTitle}
+              onChange={(event) =>
+                updatePageDraft({ recapsTitle: event.target.value })
+              }
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Recaps description
+            <input
+              type="text"
+              value={pageDraft.recapsDescription}
+              onChange={(event) =>
+                updatePageDraft({ recapsDescription: event.target.value })
+              }
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+        </div>
+
+        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+          Where we play title
+          <input
+            type="text"
+            value={pageDraft.whereTitle}
+            onChange={(event) =>
+              updatePageDraft({ whereTitle: event.target.value })
+            }
+            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+          />
+        </label>
+
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Destinations
+          </p>
+          {pageDraft.destinations.map((destination, index) => (
+            <div key={index} className="grid gap-3 sm:grid-cols-2">
+              <input
+                type="text"
+                value={destination.label}
+                placeholder="Label"
+                onChange={(event) =>
+                  updateDestination(index, { label: event.target.value })
+                }
+                className="w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+              />
+              <input
+                type="text"
+                value={destination.text}
+                placeholder="Text"
+                onChange={(event) =>
+                  updateDestination(index, { text: event.target.value })
+                }
+                className="w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              updatePageDraft({
+                destinations: [
+                  ...pageDraft.destinations,
+                  { label: "", text: "" },
+                ],
+              })
+            }
+            className="text-xs uppercase tracking-[0.16em] text-zinc-400 hover:text-white"
+          >
+            Add destination
+          </button>
+        </div>
+
+        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+          Approach title
+          <input
+            type="text"
+            value={pageDraft.approachTitle}
+            onChange={(event) =>
+              updatePageDraft({ approachTitle: event.target.value })
+            }
+            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+          />
+        </label>
+
+        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+          Approach body
+          <textarea
+            value={pageDraft.approachBody}
+            onChange={(event) =>
+              updatePageDraft({ approachBody: event.target.value })
+            }
+            rows={6}
+            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+          />
+        </label>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Booking title
+            <input
+              type="text"
+              value={pageDraft.bookingTitle}
+              onChange={(event) =>
+                updatePageDraft({ bookingTitle: event.target.value })
+              }
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+          <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+            Booking button label
+            <input
+              type="text"
+              value={pageDraft.bookingLabel}
+              onChange={(event) =>
+                updatePageDraft({ bookingLabel: event.target.value })
+              }
+              className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+            />
+          </label>
+        </div>
+
+        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+          Booking description
+          <textarea
+            value={pageDraft.bookingDescription}
+            onChange={(event) =>
+              updatePageDraft({ bookingDescription: event.target.value })
+            }
+            rows={2}
+            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+          />
+        </label>
+
+        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
+          Booking URL
+          <input
+            type="url"
+            value={pageDraft.bookingUrl}
+            onChange={(event) =>
+              updatePageDraft({ bookingUrl: event.target.value })
+            }
+            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
+          />
+        </label>
       </div>
 
-      {status ? <p className="text-sm text-zinc-400">{status}</p> : null}
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={startCreate}
+            className="inline-flex h-11 items-center bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-black disabled:opacity-50"
+          >
+            New recap
+          </button>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="inline-flex h-11 items-center px-3 text-xs uppercase tracking-[0.16em] text-zinc-500 hover:text-white"
+          >
+            Log out
+          </button>
+        </div>
 
-      {posts.length === 0 ? (
-        <p className="border-t border-white/10 py-8 text-sm text-zinc-500">
-          No wedding recaps yet. Create one to get started.
-        </p>
-      ) : (
-        <ul className="space-y-3">
-          {posts.map((post) => (
-            <li
-              key={post.id}
-              className="flex flex-col gap-3 border border-white/10 bg-zinc-900 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-white">
-                  {post.title || "Untitled"}
-                </p>
-                <p className="mt-1 text-xs text-zinc-500">
-                  {post.date || "No date"}
-                  {post.slug ? ` · /weddings/${post.slug}` : ""}
-                  {post.published ? " · published" : " · draft"}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={() => startEdit(post)}
-                  className="text-xs uppercase tracking-[0.16em] text-zinc-300 hover:text-white"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void deletePost(post)}
-                  className="text-xs uppercase tracking-[0.16em] text-zinc-500 hover:text-white disabled:opacity-50"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+        {status ? <p className="text-sm text-zinc-400">{status}</p> : null}
+
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-white">
+            Recaps
+          </h2>
+          <p className="mt-1 text-xs text-zinc-500">
+            Newest published recaps fill 4 photo tiles above Where We Play and 4
+            below.
+          </p>
+        </div>
+
+        {posts.length === 0 ? (
+          <p className="border-t border-white/10 py-8 text-sm text-zinc-500">
+            No wedding recaps yet. Create one to get started.
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {posts.map((post) => (
+              <li
+                key={post.id}
+                className="flex flex-col gap-3 border border-white/10 bg-zinc-900 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-white">
+                    {post.title || "Untitled"}
+                  </p>
+                  <p className="mt-1 text-xs text-zinc-500">
+                    {post.date || "No date"}
+                    {post.slug ? ` · /weddings/${post.slug}` : ""}
+                    {post.published ? " · published" : " · draft"}
+                    {` · ${post.photos.length} photos`}
+                    {post.videos.length
+                      ? ` · ${post.videos.length} videos`
+                      : ""}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => startEdit(post)}
+                    className="text-xs uppercase tracking-[0.16em] text-zinc-300 hover:text-white"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void deletePost(post)}
+                    className="text-xs uppercase tracking-[0.16em] text-zinc-500 hover:text-white disabled:opacity-50"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

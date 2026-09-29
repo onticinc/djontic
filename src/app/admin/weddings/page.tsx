@@ -16,8 +16,9 @@ export default function AdminWeddingsPage() {
           Manage Weddings
         </h1>
         <p className="mt-4 text-base leading-relaxed text-zinc-400">
-          Write wedding recaps with rich text, upload photos to Cloudflare
-          Images, and attach video links. Changes save directly to Convex.
+          Edit the public /weddings page copy, then manage recaps with photos
+          and videos. The newest 8 published recaps fill 4 tiles above and 4
+          below Where We Play.
         </p>
         <AdminNav current="weddings" />
       </div>

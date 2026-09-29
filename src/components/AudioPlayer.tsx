@@ -56,7 +56,7 @@ export function AudioPlayer({ mix }: AudioPlayerProps) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h3 className="font-display text-2xl tracking-[0.08em] text-foreground sm:text-3xl">
+              <h3 className="font-display text-xl tracking-[0.04em] text-foreground sm:text-2xl">
                 {mix.title}
               </h3>
               {mix.description ? (

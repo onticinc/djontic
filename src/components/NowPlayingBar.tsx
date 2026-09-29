@@ -56,7 +56,7 @@ export function NowPlayingBar() {
               </button>
               <Link
                 href={activeMix.pageUrl}
-                className="min-w-0 truncate font-display text-lg tracking-[0.06em] text-foreground hover:text-steel"
+                className="min-w-0 truncate font-display text-base tracking-[0.04em] text-foreground hover:text-steel"
               >
                 {activeMix.title}
               </Link>

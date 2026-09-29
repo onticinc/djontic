@@ -22,6 +22,7 @@ export const importLegacy = internalMutation({
             resourceKey: v.optional(v.union(v.string(), v.null())),
             path: v.string(),
             visible: v.boolean(),
+            featured: v.optional(v.boolean()),
             order: v.number(),
             coverUrl: v.union(v.string(), v.null()),
             category: v.union(v.string(), v.null()),
@@ -52,6 +53,8 @@ export const importLegacy = internalMutation({
           excerpt: v.string(),
           bodyHtml: v.string(),
           coverUrl: v.union(v.string(), v.null()),
+          photographerName: v.optional(v.string()),
+          photographerUrl: v.optional(v.union(v.string(), v.null())),
           photos: v.array(
             v.object({
               id: v.string(),
@@ -96,6 +99,7 @@ export const importLegacy = internalMutation({
           resourceKey: mix.resourceKey ?? null,
           path: mix.path,
           visible: mix.visible,
+          featured: mix.featured ?? false,
           order: mix.order,
           coverUrl: mix.coverUrl,
           category: mix.category,

@@ -20,6 +20,16 @@ function formatMonth(isoDate: string): string {
   }).format(date);
 }
 
+function formatDayMonth(isoDate: string): string {
+  const date = new Date(`${isoDate}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return "Date TBA";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "America/Boise",
+  }).format(date);
+}
+
 function groupEventsByYearAndMonth(events: PublicEvent[]): EventYearGroup[] {
   const years: EventYearGroup[] = [];
   const yearIndex = new Map<string, number>();
@@ -62,62 +72,58 @@ export function EventList({ events }: { events: PublicEvent[] }) {
   }
 
   const years = groupEventsByYearAndMonth(events);
-  const showYearBreaks = years.length > 1;
 
   return (
     <div className="bg-background">
       {years.map((yearGroup, yearIndex) => (
         <div key={yearGroup.year}>
-          {showYearBreaks && yearIndex > 0 ? (
-            <p className="mt-10 mb-6 text-center font-display text-xl tracking-[0.16em] text-foreground sm:text-2xl">
-              - {yearGroup.year} -
-            </p>
-          ) : null}
+          <p
+            className={`mb-6 text-center font-display text-lg uppercase tracking-[0.18em] text-steel sm:text-xl ${
+              yearIndex > 0 ? "mt-10" : ""
+            }`}
+          >
+            - {yearGroup.year} -
+          </p>
 
-          {yearGroup.months.map((group, monthIndex) => {
-            const isFirstAfterYearBreak =
-              showYearBreaks && yearIndex > 0 && monthIndex === 0;
-
-            return (
-              <section
-                key={group.key}
-                className={
-                  isFirstAfterYearBreak
-                    ? undefined
-                    : "mt-10 border-t border-border pt-8"
-                }
-              >
-                <h2 className="font-display text-2xl tracking-[0.12em] text-muted-2 sm:text-3xl">
-                  {group.label}
-                </h2>
-                <ul>
-                  {group.events.map((event, eventIndex) => (
-                    <li
-                      key={event.id}
-                      className={
-                        eventIndex === 0
-                          ? "pt-6 pb-8"
-                          : "border-t border-border py-8"
-                      }
-                    >
-                      <p className="text-xs uppercase tracking-[0.2em] text-steel">
-                        {event.dateLabel}
-                      </p>
-                      <h3 className="mt-2 font-display text-3xl tracking-[0.06em] text-foreground sm:text-4xl">
-                        {event.name}
-                      </h3>
-                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
-                        <p>{event.location}</p>
-                        <p>
-                          {event.city}, {event.state}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          })}
+          {yearGroup.months.map((group, monthIndex) => (
+            <section
+              key={group.key}
+              className={
+                monthIndex === 0
+                  ? undefined
+                  : "mt-10 border-t border-border pt-8"
+              }
+            >
+              <h2 className="font-display text-2xl font-semibold tracking-[0.1em] text-muted-2 sm:text-3xl">
+                {group.label}
+              </h2>
+              <ul className="mt-4 space-y-3">
+                {group.events.map((event) => (
+                  <li
+                    key={event.id}
+                    className="border border-border bg-surface px-4 py-5 sm:px-6 sm:py-6"
+                  >
+                    <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 font-display text-2xl tracking-[0.04em] text-foreground sm:text-3xl">
+                      <span>{formatDayMonth(event.date)}</span>
+                      <span aria-hidden="true" className="text-muted-2">
+                        –
+                      </span>
+                      <span>{event.location}</span>
+                      <span aria-hidden="true" className="text-muted-2">
+                        –
+                      </span>
+                      <span>
+                        {event.city}, {event.state}
+                      </span>
+                    </p>
+                    <h3 className="mt-1.5 text-lg tracking-[0.02em] text-muted sm:text-xl">
+                      {event.name}
+                    </h3>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
       ))}
     </div>

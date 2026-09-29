@@ -7,6 +7,8 @@ export type MixRecord = {
   resourceKey: string | null;
   path: string;
   visible: boolean;
+  /** Pin to the top Featured section on the mixes page. */
+  featured: boolean;
   order: number;
   /** Optional external cover image URL (https…). */
   coverUrl: string | null;
@@ -39,6 +41,7 @@ export type Mix = {
   peaksUrl: string;
   playCount: number;
   category: string | null;
+  featured: boolean;
 };
 
 export function filenameToTitle(filename: string): string {
@@ -189,6 +192,7 @@ export function normalizeMixRecord(raw: Record<string, unknown>): MixRecord {
         : null,
     path: String(raw.path ?? `/${filename}`),
     visible: Boolean(raw.visible),
+    featured: Boolean(raw.featured),
     order: typeof raw.order === "number" ? raw.order : 0,
     coverUrl: normalizeCoverUrl(raw.coverUrl),
     category: normalizeCategory(raw.category),

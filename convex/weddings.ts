@@ -28,6 +28,8 @@ const weddingValidator = v.object({
   excerpt: v.string(),
   bodyHtml: v.string(),
   coverUrl: v.union(v.string(), v.null()),
+  photographerName: v.optional(v.string()),
+  photographerUrl: v.optional(v.union(v.string(), v.null())),
   photos: v.array(photoValidator),
   videos: v.array(videoValidator),
   published: v.boolean(),
@@ -56,6 +58,8 @@ function toPublic(post: {
   excerpt: string;
   bodyHtml: string;
   coverUrl: string | null;
+  photographerName?: string;
+  photographerUrl?: string | null;
   photos: Array<{ id: string; url: string; alt: string }>;
   videos: Array<{
     id: string;
@@ -75,6 +79,8 @@ function toPublic(post: {
     excerpt: post.excerpt,
     bodyHtml: post.bodyHtml,
     coverUrl: post.coverUrl,
+    photographerName: post.photographerName?.trim() || "",
+    photographerUrl: post.photographerUrl?.trim() || null,
     photos: post.photos,
     videos: post.videos,
   };
@@ -121,6 +127,8 @@ export const listAll = query({
         excerpt: post.excerpt,
         bodyHtml: post.bodyHtml,
         coverUrl: post.coverUrl,
+        photographerName: post.photographerName ?? "",
+        photographerUrl: post.photographerUrl ?? null,
         photos: post.photos,
         videos: post.videos,
         published: post.published,
@@ -177,5 +185,123 @@ export const replaceAll = mutation({
     for (const post of args.posts) {
       await ctx.db.insert("weddings", { ...post, updatedAt });
     }
+  },
+});
+
+const destinationValidator = v.object({
+  label: v.string(),
+  text: v.string(),
+});
+
+export const defaultPageSettings = {
+  heroEyebrow: "Destination celebrations",
+  heroTitle: "Weddings",
+  heroDescription:
+    "From mountain lodges to lakeside receptions — reading the room, building the night, and keeping the dance floor full.",
+  recapsTitle: "Wedding Recaps",
+  recapsDescription:
+    "Photos and films from celebrations across the mountain west.",
+  whereTitle: "Where We Play",
+  destinations: [
+    { label: "Home base", text: "Sun Valley, Idaho" },
+    {
+      label: "Regular destinations",
+      text: "Park City · Jackson Hole · Chelan, Washington",
+    },
+    {
+      label: "Also available",
+      text: "Travel weekends across the mountain west",
+    },
+  ],
+  approachTitle: "The Approach",
+  approachBody:
+    "Every wedding gets a custom set built around your guests, timeline, and taste — ceremony walk-ins, cocktail-hour polish, dinner energy, and a reception that never plateaus. No cookie-cutter playlists.\n\nCoordination with planners, venues, and A/V teams is part of the process so the night stays seamless from first look to last song.",
+  bookingTitle: "Reserve your date",
+  bookingDescription:
+    "Peak season books early. Share your venue, guest count, and preferred timeline to get started.",
+  bookingLabel: "Book a Wedding",
+  bookingUrl:
+    "https://onticllc.notion.site/161b4a65404b425eb24340a8459a9958",
+};
+
+export const getPageSettings = query({
+  args: {},
+  handler: async (ctx) => {
+    const settings = await ctx.db
+      .query("weddingPageSettings")
+      .withIndex("by_singleton", (q) => q.eq("singleton", "default"))
+      .unique();
+    if (!settings) {
+      return { ...defaultPageSettings, updatedAt: new Date().toISOString() };
+    }
+    return {
+      heroEyebrow: settings.heroEyebrow,
+      heroTitle: settings.heroTitle,
+      heroDescription: settings.heroDescription,
+      recapsTitle: settings.recapsTitle,
+      recapsDescription: settings.recapsDescription,
+      whereTitle: settings.whereTitle,
+      destinations: settings.destinations,
+      approachTitle: settings.approachTitle,
+      approachBody: settings.approachBody,
+      bookingTitle: settings.bookingTitle,
+      bookingDescription: settings.bookingDescription,
+      bookingLabel: settings.bookingLabel,
+      bookingUrl: settings.bookingUrl,
+      updatedAt: settings.updatedAt,
+    };
+  },
+});
+
+export const savePageSettings = mutation({
+  args: {
+    heroEyebrow: v.string(),
+    heroTitle: v.string(),
+    heroDescription: v.string(),
+    recapsTitle: v.string(),
+    recapsDescription: v.string(),
+    whereTitle: v.string(),
+    destinations: v.array(destinationValidator),
+    approachTitle: v.string(),
+    approachBody: v.string(),
+    bookingTitle: v.string(),
+    bookingDescription: v.string(),
+    bookingLabel: v.string(),
+    bookingUrl: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const destinations = args.destinations
+      .map((item) => ({
+        label: item.label.trim(),
+        text: item.text.trim(),
+      }))
+      .filter((item) => item.label || item.text);
+    const payload = {
+      singleton: "default" as const,
+      heroEyebrow: args.heroEyebrow.trim(),
+      heroTitle: args.heroTitle.trim(),
+      heroDescription: args.heroDescription.trim(),
+      recapsTitle: args.recapsTitle.trim(),
+      recapsDescription: args.recapsDescription.trim(),
+      whereTitle: args.whereTitle.trim(),
+      destinations,
+      approachTitle: args.approachTitle.trim(),
+      approachBody: args.approachBody.trim(),
+      bookingTitle: args.bookingTitle.trim(),
+      bookingDescription: args.bookingDescription.trim(),
+      bookingLabel: args.bookingLabel.trim(),
+      bookingUrl: args.bookingUrl.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+    const existing = await ctx.db
+      .query("weddingPageSettings")
+      .withIndex("by_singleton", (q) => q.eq("singleton", "default"))
+      .unique();
+    if (existing) {
+      await ctx.db.patch(existing._id, payload);
+      return existing._id;
+    }
+    return await ctx.db.insert("weddingPageSettings", payload);
   },
 });

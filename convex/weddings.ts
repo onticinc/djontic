@@ -201,17 +201,12 @@ export const defaultPageSettings = {
   recapsTitle: "Wedding Recaps",
   recapsDescription:
     "Photos and films from celebrations across the mountain west.",
-  whereTitle: "Where We Play",
+  whereTitle: "Regular Destinations",
   destinations: [
-    { label: "Home base", text: "Sun Valley, Idaho" },
-    {
-      label: "Regular destinations",
-      text: "Park City · Jackson Hole · Chelan, Washington",
-    },
-    {
-      label: "Also available",
-      text: "Travel weekends across the mountain west",
-    },
+    { label: "", text: "Sun Valley" },
+    { label: "", text: "Park City" },
+    { label: "", text: "Jackson Hole" },
+    { label: "", text: "Chelan, Washington" },
   ],
   approachTitle: "The Approach",
   approachBody:
@@ -234,14 +229,29 @@ export const getPageSettings = query({
     if (!settings) {
       return { ...defaultPageSettings, updatedAt: new Date().toISOString() };
     }
+
+    const looksLegacy =
+      settings.whereTitle === "Where We Play" ||
+      settings.destinations.some(
+        (item) =>
+          item.label === "Home base" ||
+          item.label === "Regular destinations" ||
+          item.label === "Also available" ||
+          item.text.includes("Park City · Jackson Hole · Chelan"),
+      );
+
     return {
       heroEyebrow: settings.heroEyebrow,
       heroTitle: settings.heroTitle,
       heroDescription: settings.heroDescription,
       recapsTitle: settings.recapsTitle,
       recapsDescription: settings.recapsDescription,
-      whereTitle: settings.whereTitle,
-      destinations: settings.destinations,
+      whereTitle: looksLegacy
+        ? defaultPageSettings.whereTitle
+        : settings.whereTitle,
+      destinations: looksLegacy
+        ? defaultPageSettings.destinations
+        : settings.destinations,
       approachTitle: settings.approachTitle,
       approachBody: settings.approachBody,
       bookingTitle: settings.bookingTitle,

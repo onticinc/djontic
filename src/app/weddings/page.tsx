@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/PageHero";
 import { WeddingRecapList } from "@/components/WeddingRecapList";
 import {
   getPublishedWeddingPosts,
@@ -17,7 +16,7 @@ export const dynamic = "force-dynamic";
 const SECTION_SIZE = 4;
 const TOP_SHOWCASE_SLUGS = [
   "sam-david-wedding",
-  "2023-wedding-season-june-july",
+  "jessica-and-david-wedding",
   "helle-russell-wedding",
   "siren-songs-winery",
 ] as const;
@@ -47,82 +46,28 @@ export default async function WeddingsPage() {
     getWeddingPageSettings(),
   ]);
   const topPosts = pickTopShowcase(posts);
+  const featuredPosts = topPosts.slice(0, 2);
+  const midPosts = topPosts.slice(2);
   const topIds = new Set(topPosts.map((post) => post.id));
   const bottomPosts = posts
     .filter((post) => !topIds.has(post.id))
     .slice(0, SECTION_SIZE);
-  const approachParagraphs = page.approachBody
-    .split(/\n\s*\n/)
-    .map((part) => part.trim())
-    .filter(Boolean);
 
   return (
     <>
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        <PageHero
-          eyebrow={page.heroEyebrow || undefined}
-          title={page.heroTitle}
-          description={page.heroDescription}
-        />
-
-        <div className="mt-14">
-          <h2 className="font-display text-2xl tracking-[0.06em] text-foreground sm:text-3xl">
-            {page.recapsTitle}
-          </h2>
-          {page.recapsDescription ? (
-            <p className="mt-3 max-w-2xl text-sm text-muted">
-              {page.recapsDescription}
-            </p>
-          ) : null}
-          {topPosts.length > 0 ? (
-            <div className="mt-8">
-              <WeddingRecapList posts={topPosts} layout="showcase" />
-            </div>
-          ) : (
-            <p className="mt-8 text-muted">
-              Wedding photos will appear here soon.
-            </p>
-          )}
-        </div>
-      </section>
-
-      <div className="mesh-panel w-full border-y border-border">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-          <h2 className="font-display text-2xl tracking-[0.06em] text-foreground sm:text-3xl">
-            {page.whereTitle}
-          </h2>
-          <ul className="mt-8 grid gap-8 sm:grid-cols-3">
-            {page.destinations.map((destination) => (
-              <li key={`${destination.label}:${destination.text}`}>
-                <span className="block text-xs uppercase tracking-[0.18em] text-steel">
-                  {destination.label}
-                </span>
-                <p className="mt-2 text-base text-muted sm:text-lg">
-                  {destination.text}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        {bottomPosts.length > 0 ? (
-          <div className="mb-20">
-            <WeddingRecapList posts={bottomPosts} />
+      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:pb-10 sm:pt-20">
+        <h1 className="font-display text-3xl tracking-[0.06em] text-foreground sm:text-4xl">
+          {page.recapsTitle}
+        </h1>
+        {featuredPosts.length > 0 ? (
+          <div className="mt-8">
+            <WeddingRecapList posts={featuredPosts} layout="showcase" />
           </div>
-        ) : null}
-
-        <div className="border-t border-border pt-12">
-          <h2 className="font-display text-2xl tracking-[0.06em] text-foreground sm:text-3xl">
-            {page.approachTitle}
-          </h2>
-          <div className="mt-6 max-w-3xl space-y-4 text-sm leading-relaxed text-muted sm:text-base">
-            {approachParagraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 48)}>{paragraph}</p>
-            ))}
-          </div>
-        </div>
+        ) : (
+          <p className="mt-8 text-muted">
+            Wedding photos will appear here soon.
+          </p>
+        )}
       </section>
 
       <div className="mesh-panel w-full border-y border-border">
@@ -145,6 +90,32 @@ export default async function WeddingsPage() {
           </a>
         </div>
       </div>
+
+      {midPosts.length > 0 ? (
+        <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+          <WeddingRecapList posts={midPosts} />
+        </section>
+      ) : null}
+
+      <div className="mesh-panel w-full border-y border-border">
+        <div className="w-full px-4 py-12 sm:px-8 sm:py-16">
+          <h2 className="text-center font-display text-2xl tracking-[0.06em] text-foreground sm:text-3xl">
+            {page.whereTitle}
+          </h2>
+          <p className="mx-auto mt-8 max-w-none text-center text-lg tracking-[0.04em] text-muted sm:text-2xl">
+            {page.destinations
+              .map((destination) => destination.text.trim())
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        </div>
+      </div>
+
+      {bottomPosts.length > 0 ? (
+        <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+          <WeddingRecapList posts={bottomPosts} />
+        </section>
+      ) : null}
     </>
   );
 }

@@ -18,7 +18,7 @@ export default function AdminWeddingsPage() {
         <p className="mt-4 text-base leading-relaxed text-zinc-400">
           Edit the public /weddings page copy, then manage recaps with photos
           and videos. The newest 8 published recaps fill 4 tiles above and 4
-          below Where We Play.
+          below Regular Destinations.
         </p>
         <AdminNav current="weddings" />
       </div>

@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "imagedelivery.net",
       },
+      {
+        protocol: "https",
+        hostname: "vumbnail.com",
+      },
     ],
   },
 };

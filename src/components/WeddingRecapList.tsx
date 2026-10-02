@@ -28,6 +28,10 @@ function youtubeThumb(url: string): string | null {
       const id = parsed.searchParams.get("v");
       return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
     }
+    if (host === "vimeo.com" || host === "player.vimeo.com") {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      return id && /^\d+$/.test(id) ? `https://vumbnail.com/${id}.jpg` : null;
+    }
   } catch {
     return null;
   }

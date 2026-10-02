@@ -733,7 +733,7 @@ function WeddingsAdminPanel() {
         </div>
 
         <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
-          Where we play title
+          Destinations title
           <input
             type="text"
             value={pageDraft.whereTitle}
@@ -785,30 +785,6 @@ function WeddingsAdminPanel() {
             Add destination
           </button>
         </div>
-
-        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
-          Approach title
-          <input
-            type="text"
-            value={pageDraft.approachTitle}
-            onChange={(event) =>
-              updatePageDraft({ approachTitle: event.target.value })
-            }
-            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
-          />
-        </label>
-
-        <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
-          Approach body
-          <textarea
-            value={pageDraft.approachBody}
-            onChange={(event) =>
-              updatePageDraft({ approachBody: event.target.value })
-            }
-            rows={6}
-            className="mt-2 w-full border border-white/15 bg-zinc-950 px-3 py-2 text-sm text-white outline-none focus:border-white/40"
-          />
-        </label>
 
         <div className="grid gap-4 lg:grid-cols-2">
           <label className="block text-xs uppercase tracking-[0.16em] text-zinc-500">
@@ -886,8 +862,8 @@ function WeddingsAdminPanel() {
             Recaps
           </h2>
           <p className="mt-1 text-xs text-zinc-500">
-            Newest published recaps fill 4 photo tiles above Where We Play and 4
-            below.
+            Newest published recaps fill 4 photo tiles above Regular Destinations
+            and 4 below.
           </p>
         </div>
 

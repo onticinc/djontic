@@ -59,7 +59,6 @@ function RecapMeta({ post }: { post: PublicWeddingPost }) {
         {post.title}
       </h3>
       {meta ? <p className="mt-1 text-sm text-muted">{meta}</p> : null}
-      <PhotographerCredit post={post} className="mt-1.5" />
     </div>
   );
 }
@@ -226,6 +225,7 @@ export function WeddingRecapList({
               )}
               <RecapMeta post={post} />
             </Link>
+            <PhotographerCredit post={post} className="mt-1.5" />
           </li>
         );
       })}

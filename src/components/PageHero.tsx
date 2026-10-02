@@ -1,7 +1,7 @@
 type PageHeroProps = {
   eyebrow?: string;
   title: string;
-  description: string;
+  description?: string;
 };
 
 export function PageHero({ eyebrow, title, description }: PageHeroProps) {
